@@ -48,11 +48,21 @@ int main() {
 		0.5f, -0.5f, 0.0f,
 		0.0f, 0.5f, 0.0f
 	};
-
+	
+	//Creates VBO Buffer object, binds arraybuffer to VBO and sends the gpu the buffer with all the triangles's vertices
 	unsigned int VBO;
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	//vertex shader 
+	const char* vertexShader = "#version 330 core"
+		"layout(location = 0) in vec3 aPos"
+		"void main(){"
+		"	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);";
+
+
+
 
 
 	while (!glfwWindowShouldClose(window)) { //rendering loop
