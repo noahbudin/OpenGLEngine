@@ -1,9 +1,26 @@
 #include <glad/glad.h>
 #include <glfw3.h>
 #include <iostream>
+/**
+/CONSTANTS
+**/
+float red = 0.0f;
+float green = 0.75f;
+float blue = 0.5f;
+static int width = 800;
+static int height = 600;
+
+/**
+/SHADERS
+**/
+const char* vertexShaderSource = "#version 330 core\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "void main()\n"
+    "{\n"
+    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+	"}\0";
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-	
 	glViewport(0, 0, width, height);
 }
 
@@ -14,9 +31,6 @@ void processInput(GLFWwindow* window) {
 }
 
 int main() {
-	//constant
-	static int width = 800;
-	static int height = 600;
 	glfwInit(); //intializes glfw 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); //window hint configures glfw options, 1st param is option, second is choice
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -39,7 +53,7 @@ int main() {
 	}
 
 	glViewport(0, 0, width, height);
-	glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
+	glClearColor(red, green, blue, 0.0f); //put colors in seperate vars later
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); //kinda like an event listener, this is for resizing window
 
 	//Triangle vertices
@@ -53,17 +67,26 @@ int main() {
 	unsigned int VBO;
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); //copy vertice data into buffer array
 
-	//vertex shader 
-	const char* vertexShader = "#version 330 core"
-		"layout(location = 0) in vec3 aPos"
-		"void main(){"
-		"	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);";
+	//store and compile vertex shader from above vertexShaderSource
+	unsigned int vertexShader;
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+	glCompileShader(vertexShader);
 
+	//confirm the shader compilation did not burn to the ground
+	int success;
+	char infoLog[512];
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 
-
-
+	if (!success) {
+		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER_COMPILATION_FAILURE-->vertexShader" << std::endl;
+	}
+	else {
+		std::cout << "SHADER_COMPILATION_SUCCEEDED-->vertexShader" << std::endl;
+	}
 
 	while (!glfwWindowShouldClose(window)) { //rendering loop
 		processInput(window); //listens for key/mouse input
