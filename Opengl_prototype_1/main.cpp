@@ -1,6 +1,5 @@
 //test for both computers
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include "main.h"
 #include <iostream>
 /**
 /CONSTANTS
@@ -114,6 +113,7 @@ int main() {
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
+	//vertex arrays remember the pointer settings we just made, just bind appropriate buffer to use those settings
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
@@ -161,5 +161,8 @@ int main() {
 	}
 
 	glfwTerminate(); //safely deletes all objects and stuff with glfw
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+
 	return 0;
 }
