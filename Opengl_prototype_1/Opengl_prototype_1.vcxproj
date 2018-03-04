@@ -69,8 +69,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Users\noahb\Desktop\Comp 220 projects\Opengl_prototype_1\Opengl_prototype_1\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\noahb\Desktop\Comp 220 projects\Opengl_prototype_1\Opengl_prototype_1\Libraries;$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);Include;$(IncludePath)</IncludePath>
+    <LibraryPath>Libraries;$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>C:\Users\Noah\Source\Repos\OpenGL_Tutorial_Runthrough\Opengl_prototype_1\Include;$(IncludePath)</IncludePath>
