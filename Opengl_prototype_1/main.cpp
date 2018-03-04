@@ -1,5 +1,5 @@
 #include <glad/glad.h>
-#include <glfw3.h>
+#include <GLFW/glfw3.h>
 #include <iostream>
 /**
 /CONSTANTS
@@ -14,11 +14,19 @@ static int height = 600;
 /SHADERS 
 /TODO: Read shaders from a text file instead of writing to a string here
 **/
-const char* vertexShaderSource = "#version 330 core\n"
+const char* vertexShaderSource = 
+	"#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "void main()\n"
     "{\n"
     "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+	"}\0";
+
+const char* fragShaderSource =
+	"#version 330 core\n"
+	"out vec4 FragColor;\n"
+	"void main(){\n"
+	"FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
 	"}\0";
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -29,6 +37,21 @@ void processInput(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
 	}
+}
+
+void shaderSuccess(unsigned int shader, char* shaderType) {
+	int success;
+	char infoLog[512];
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+
+	if (!success) {
+		glGetShaderInfoLog(shader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER_COMPILATION_FAILURE-->" << shaderType << std::endl;
+	}
+	else {
+		std::cout << "SHADER_COMPILATION_SUCCEEDED-->" << shaderType << std::endl;
+	}
+
 }
 
 int main() {
@@ -75,19 +98,22 @@ int main() {
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 	glCompileShader(vertexShader);
+	
+	unsigned int fragShader;
+	fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragShader, 1, &fragShaderSource, NULL);
+	glCompileShader(fragShader);
 
 	//confirm the shader compilation did not burn to the ground
-	int success;
-	char infoLog[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+	shaderSuccess(vertexShader, "Vertex Shader");
+	shaderSuccess(fragShader, "Fragment Shader");
 
-	if (!success) {
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER_COMPILATION_FAILURE-->vertexShader" << std::endl;
-	}
-	else {
-		std::cout << "SHADER_COMPILATION_SUCCEEDED-->vertexShader" << std::endl;
-	}
+	//link shaders together in a shader program and create the program
+	unsigned int shaderProgram;
+	shaderProgram = glCreateProgram();
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragShader);
+	glLinkProgram(shaderProgram);
 
 	while (!glfwWindowShouldClose(window)) { //rendering loop
 		processInput(window); //listens for key/mouse input
