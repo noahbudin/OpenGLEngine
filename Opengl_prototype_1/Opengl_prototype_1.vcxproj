@@ -119,6 +119,13 @@
     <ClCompile Include="..\..\..\src\glad.c" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\glad\glad.h" />
+    <ClInclude Include="Include\glfw3.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="Libraries\glfw3.lib" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

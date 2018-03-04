@@ -11,7 +11,8 @@ static int width = 800;
 static int height = 600;
 
 /**
-/SHADERS
+/SHADERS 
+/TODO: Read shaders from a text file instead of writing to a string here
 **/
 const char* vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
