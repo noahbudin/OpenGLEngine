@@ -1,18 +1,18 @@
-//test for both computers
 #include "main.h"
 #include <iostream>
+
 /**
 /CONSTANTS
 **/
 float red = 0.0f;
 float green = 0.75f;
 float blue = 0.5f;
-static int width = 800;
-static int height = 600;
+const int width = 800;
+const int height = 600;
 
 /**
 /SHADERS 
-/TODO: Read shaders from a text file instead of writing to a string here
+/TODO: Read shaders from a file instead of writing to a string here
 **/
 const char* vertexShaderSource = 
 	"#version 330 core\n"
@@ -34,8 +34,16 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 void processInput(GLFWwindow* window) {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+
+	int escapeKey = glfwGetKey(window, GLFW_KEY_ESCAPE);
+	int spaceKey = glfwGetKey(window, GLFW_KEY_SPACE);
+
+	if (escapeKey == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
+	}
+
+	if (spaceKey == GLFW_PRESS) {
+		std::cout << "Space Key Pressed!" << std::endl;
 	}
 }
 
@@ -93,41 +101,6 @@ int main() {
 	glClearColor(red, green, blue, 0.0f); //put colors in seperate vars later
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); //kinda like an event listener, this is for resizing window
 
-	//Triangle vertices
-	float firstTriangle[] = {
-		-0.9f, -0.5f, 0.0f,  // left 
-		-0.0f, -0.5f, 0.0f,  // right
-		-0.45f, 0.5f, 0.0f,  // top 
-	};
-
-	float secondTriangle[] = {
-		0.0f, -0.5f, 0.0f,  // left
-		0.9f, -0.5f, 0.0f,  // right
-		0.45f, 0.5f, 0.0f   // top 
-	};
-
-	//Creates VBO Buffer object, binds arraybuffer to VBO and sends the gpu the buffer with all the triangles's vertices
-	unsigned int VBO[2], VAO[2];
-	glGenVertexArrays(2, VAO);
-	glGenBuffers(2, VBO);
-
-	glBindVertexArray(VAO[0]);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(firstTriangle), firstTriangle, GL_STATIC_DRAW); //copy vertice data into buffer array
-	
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	//vertex arrays remember the pointer settings we just made, just bind appropriate buffer to use those settings
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-	glBindVertexArray(VAO[1]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(secondTriangle), secondTriangle, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
 	//wireframe mode
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -160,13 +133,33 @@ int main() {
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragShader);
 
+	float testTriangle1[] = { //left triangle
+		-0.9f, -0.5f, 0.0f,  // left 
+		-0.0f, -0.5f, 0.0f,  // right
+		-0.45f, 0.5f, 0.0f,  // top 
+	};
+	
+	float testTriangle2[] = { //right triangle
+		0.0f, -0.5f, 0.0f,  // left
+		0.9f, -0.5f, 0.0f,  // right
+		0.45f, 0.5f, 0.0f   // top 
+	};
+
+	drawTriangle t = drawTriangle(testTriangle1, 9);
+	drawTriangle t2 = drawTriangle(testTriangle2, 9);
+	t.printVertices();
+	t2.printVertices();
+
+	drawTriangle triangles[] = { t, t2 };
+		
 	while (!glfwWindowShouldClose(window)) { //rendering loop
 		processInput(window); //listens for key/mouse input
 		glClear(GL_COLOR_BUFFER_BIT);
 		//for all rendering use this shader program
 		glUseProgram(shaderProgram);
-		for (int i = 0; i < 2; i++) {
-			glBindVertexArray(VAO[i]);
+		//holy sh*t this works?!?!
+		for (int i = 0; i < triangles[0].countTriangle(); i++) {
+			glBindVertexArray(triangles[i].VAO);
 			glDrawArrays(GL_TRIANGLES, 0, 3);
 		}
 		glfwSwapBuffers(window);
@@ -174,8 +167,6 @@ int main() {
 	}
 
 	glfwTerminate(); //safely deletes all objects and stuff with glfw
-	glDeleteVertexArrays(2, VAO);
-	glDeleteBuffers(2, VBO);
 
 	return 0;
 }
