@@ -2,6 +2,7 @@
 
 	int drawTriangle::triangleCount = 0;
 
+	//constructor
 	drawTriangle::drawTriangle(float vertices[], int arrSize) {
 		this->size = arrSize;
 		triangleCount++;
@@ -11,6 +12,10 @@
 		this->newTriangle();
 		this->countTriangle();
 	}
+
+	//TODO Destructor, not a super big deal now though
+	//copy constructor?
+
 
 	void drawTriangle::newTriangle() {
 
@@ -32,7 +37,8 @@
 			std::cout << "index: " << i << " vertex: " << this->verts[i] << std::endl;
 		}
 	}
-
+	
+	//kinda useless after random triangle implementation, maybe useful later after that is cleaned up?
 	int drawTriangle::countTriangle() {
 		return triangleCount;
 	}

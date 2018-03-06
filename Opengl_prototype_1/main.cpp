@@ -3,10 +3,11 @@
 
 /**
 /CONSTANTS
+/TODO: Clean up constants list, abstract into objects more?
 **/
-float red = 0.0f;
-float green = 0.75f;
-float blue = 0.5f;
+float red = 0.835f;
+float green = 0.6f;
+float blue = 0.0f;
 const int width = 800;
 const int height = 600;
 bool p = false;
@@ -16,6 +17,7 @@ char* previousState = "up";
 /**
 /SHADERS 
 /TODO: Read shaders from a file instead of writing to a string here
+/Writing into a GLSL file would enable color changes ect...
 **/
 const char* vertexShaderSource = 
 	"#version 330 core\n"
@@ -29,13 +31,14 @@ const char* fragShaderSource =
 	"#version 330 core\n"
 	"out vec4 FragColor;\n"
 	"void main(){\n"
-	"FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+	"FragColor = vec4(0.0f, 0.4f, 1.0f, 1.0f);\n"
 	"}\0";
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
+//gets random vertice array and spits out its pointer
 float* getRandVerts() {
 	float verts[9];
 	float triangleSize = 1.0f;
@@ -57,6 +60,7 @@ float* getRandVerts() {
 	return verts;
 }
 
+//called to create a new triangle with random vertices
 drawTriangle newTriangle() {
 	float* randVerts = getRandVerts();
 	float newT[9]; //may not need
@@ -69,6 +73,7 @@ drawTriangle newTriangle() {
 	return t;
 }
 
+//checks for escape key, will close window
 void processInput(GLFWwindow* window) {
 	int escapeKey = glfwGetKey(window, GLFW_KEY_ESCAPE);
 	
@@ -77,6 +82,7 @@ void processInput(GLFWwindow* window) {
 	}
 }
 
+//checks for space key and places single random triangle on press
 drawTriangle processSpaceKey(GLFWwindow* window, bool* keyPressed) {
 		int spaceKey = glfwGetKey(window, GLFW_KEY_SPACE);
 	
@@ -101,6 +107,7 @@ drawTriangle processSpaceKey(GLFWwindow* window, bool* keyPressed) {
 		}
 }
 
+//Both success functions give errors if there are any problems with shaders
 void shaderSuccess(unsigned int shader, char* shaderType) {
 	int success;
 	char infoLog[512];
@@ -129,9 +136,10 @@ void shaderProgramSuccess(unsigned int program, char* programType) {
 	}
 }
 
+//main implementation
 int main() {
 
-	srand(static_cast <unsigned> (time(0))); // generate random seed for rand() to use
+	srand(static_cast <unsigned> (time(0))); // generate random seed for rand() to use later
 
 	glfwInit(); //intializes glfw 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); //window hint configures glfw options, 1st param is option, second is choice
@@ -190,6 +198,9 @@ int main() {
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragShader);
 
+
+	/**
+	/TEST TRIANGLE
 	float vertices[] = { 0.2, 0.1, 0.0,
 						0.2, -0.3, 0.0,
 						-0.3, 0.3, 0.0 };
@@ -197,12 +208,14 @@ int main() {
 	std::vector<drawTriangle> triangles;
 	drawTriangle newTriangle = drawTriangle(vertices, 9);
 	triangles.push_back(newTriangle);
+	**/
 
+	std::vector<drawTriangle> triangles;//stores all my triangles
 
 	while (!glfwWindowShouldClose(window)) { //rendering loop
 		processInput(window); //listens for key/mouse input
-		drawTriangle tempT = processSpaceKey(window, keyPressed);
-		if (*keyPressed == true) {
+		drawTriangle tempT = processSpaceKey(window, keyPressed);//listens for spacebar
+		if (*keyPressed == true) { //checks pointer booleans value to check whether to add triangle to vector or not (this is not a very good system)
 			triangles.push_back(tempT);
 			*keyPressed = false;
 		}
@@ -216,9 +229,16 @@ int main() {
 				glDrawArrays(GL_TRIANGLES, 0, 3);
 			}
 		}
-		
+	
+		glfwSwapInterval(1); //this limits rendering to the refresh rate of the monitor
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+	}
+
+	//delete objects
+	for (int i = 0; i < triangles.size(); i++) {
+		glDeleteVertexArrays(1, &triangles.at(i).VAO);
+		glDeleteBuffers(1, &triangles.at(i).VBO);
 	}
 
 	glfwTerminate(); //safely deletes all objects and stuff with glfw

@@ -3,6 +3,7 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
+//class defs
 class drawTriangle {
 public:
 	float verts[9];

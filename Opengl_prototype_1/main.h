@@ -8,7 +8,7 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
-drawTriangle processSpaceKey();
+drawTriangle processSpaceKey(GLFWwindow* window, bool* keyPressed);
 void shaderSuccess(unsigned int shader, char* shaderType);
 void shaderProgramSuccess(unsigned int program, char* programType);
 drawTriangle newTriangle();
