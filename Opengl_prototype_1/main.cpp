@@ -11,6 +11,7 @@ const int width = 800;
 const int height = 600;
 bool p = false;
 bool* keyPressed = &p;
+char* previousState = "up";
 
 /**
 /SHADERS 
@@ -84,10 +85,15 @@ drawTriangle processSpaceKey(GLFWwindow* window, bool* keyPressed) {
 						0.2, -0.3, 0.0,
 						-0.3, 0.3, 0.0 };
 
-		if (spaceKey == GLFW_PRESS) {
+		if (spaceKey == GLFW_RELEASE) {
+			previousState = "up";
+		}
+
+		if (spaceKey == GLFW_PRESS && previousState == "up") {
 			drawTriangle newT = newTriangle();
 			*keyPressed = true;
 			std::cout << "Space Key Pressed!" << std::endl;
+			previousState = "down";
 			return newT;
 		}
 		else {
