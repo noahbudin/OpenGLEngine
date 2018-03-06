@@ -133,6 +133,8 @@ int main() {
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragShader);
 
+
+
 	float testTriangle1[] = { //left triangle
 		-0.9f, -0.5f, 0.0f,  // left 
 		-0.0f, -0.5f, 0.0f,  // right
@@ -150,7 +152,11 @@ int main() {
 	t.printVertices();
 	t2.printVertices();
 
-	drawTriangle triangles[] = { t, t2 };
+
+
+	std::vector<drawTriangle> triangles;
+	triangles.push_back(t);
+	triangles.push_back(t2);
 		
 	while (!glfwWindowShouldClose(window)) { //rendering loop
 		processInput(window); //listens for key/mouse input
@@ -158,8 +164,8 @@ int main() {
 		//for all rendering use this shader program
 		glUseProgram(shaderProgram);
 		//holy sh*t this works?!?!
-		for (int i = 0; i < triangles[0].countTriangle(); i++) {
-			glBindVertexArray(triangles[i].VAO);
+		for (int i = 0; i < triangles.at(0).countTriangle(); i++) {
+			glBindVertexArray(triangles.at(i).VAO);
 			glDrawArrays(GL_TRIANGLES, 0, 3);
 		}
 		glfwSwapBuffers(window);
