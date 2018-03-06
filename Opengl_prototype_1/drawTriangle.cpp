@@ -3,7 +3,6 @@
 	int drawTriangle::triangleCount = 0;
 
 	drawTriangle::drawTriangle(float vertices[], int arrSize) {
-		std::cout << "Triangle created!" << std::endl;
 		this->size = arrSize;
 		triangleCount++;
 		for (int i = 0; i < arrSize; i++) {
@@ -14,7 +13,6 @@
 	}
 
 	void drawTriangle::newTriangle() {
-		std::cout << "in new triangle method!";
 
 		//Creates VBO Buffer object, binds arraybuffer to VBO and sends the gpu the buffer with all the triangles's vertices
 		glGenVertexArrays(1, &this->VAO);

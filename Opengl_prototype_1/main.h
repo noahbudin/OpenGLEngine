@@ -3,9 +3,13 @@
 #include <GLFW/glfw3.h>
 #include "drawTriangle.h"
 #include <vector>
+#include <cstdlib>
+#include <ctime>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
+drawTriangle processSpaceKey();
 void shaderSuccess(unsigned int shader, char* shaderType);
 void shaderProgramSuccess(unsigned int program, char* programType);
-unsigned int* drawTriangles();
+drawTriangle newTriangle();
+float* getRandVerts();

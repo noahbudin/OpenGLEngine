@@ -9,6 +9,8 @@ float green = 0.75f;
 float blue = 0.5f;
 const int width = 800;
 const int height = 600;
+bool p = false;
+bool* keyPressed = &p;
 
 /**
 /SHADERS 
@@ -33,18 +35,64 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
+float* getRandVerts() {
+	float verts[9];
+	float triangleSize = 1.0f;
+	
+	for (int i = 0; i < 9; i++) {
+		float newVert;
+		if (i + 1 % 3 == 0) {
+			newVert = 0.0f;
+		}
+		else {
+			float random1 = ((float)rand()) / (float)RAND_MAX;
+			float random2 = ((float)rand()) / (float)RAND_MAX;
+			float negVert = random1 * -triangleSize;
+			float posVert = random2 * triangleSize;
+			newVert = negVert + posVert;
+		}
+		verts[i] = newVert;
+	}
+	return verts;
+}
+
+drawTriangle newTriangle() {
+	float* randVerts = getRandVerts();
+	float newT[9]; //may not need
+	for (int i = 0; i < 9; i++) {
+		newT[i] = randVerts[i];
+	}
+
+	drawTriangle t = drawTriangle(newT, 9);
+	t.printVertices();
+	return t;
+}
+
 void processInput(GLFWwindow* window) {
-
 	int escapeKey = glfwGetKey(window, GLFW_KEY_ESCAPE);
-	int spaceKey = glfwGetKey(window, GLFW_KEY_SPACE);
-
+	
 	if (escapeKey == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
 	}
+}
 
-	if (spaceKey == GLFW_PRESS) {
-		std::cout << "Space Key Pressed!" << std::endl;
-	}
+drawTriangle processSpaceKey(GLFWwindow* window, bool* keyPressed) {
+		int spaceKey = glfwGetKey(window, GLFW_KEY_SPACE);
+	
+		//defualt to return, need to clean this up
+		float vertices[] = { 0.2, 0.1, 0.0,
+						0.2, -0.3, 0.0,
+						-0.3, 0.3, 0.0 };
+
+		if (spaceKey == GLFW_PRESS) {
+			drawTriangle newT = newTriangle();
+			*keyPressed = true;
+			std::cout << "Space Key Pressed!" << std::endl;
+			return newT;
+		}
+		else {
+			return drawTriangle(vertices, 9);
+		}
 }
 
 void shaderSuccess(unsigned int shader, char* shaderType) {
@@ -76,6 +124,9 @@ void shaderProgramSuccess(unsigned int program, char* programType) {
 }
 
 int main() {
+
+	srand(static_cast <unsigned> (time(0))); // generate random seed for rand() to use
+
 	glfwInit(); //intializes glfw 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); //window hint configures glfw options, 1st param is option, second is choice
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -90,7 +141,7 @@ int main() {
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
-
+	
 	//use GLAD to manage pointers to opengl functions
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cout << "Failed to initialize GLAD" << std::endl;
@@ -133,41 +184,33 @@ int main() {
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragShader);
 
-
-
-	float testTriangle1[] = { //left triangle
-		-0.9f, -0.5f, 0.0f,  // left 
-		-0.0f, -0.5f, 0.0f,  // right
-		-0.45f, 0.5f, 0.0f,  // top 
-	};
-	
-	float testTriangle2[] = { //right triangle
-		0.0f, -0.5f, 0.0f,  // left
-		0.9f, -0.5f, 0.0f,  // right
-		0.45f, 0.5f, 0.0f   // top 
-	};
-
-	drawTriangle t = drawTriangle(testTriangle1, 9);
-	drawTriangle t2 = drawTriangle(testTriangle2, 9);
-	t.printVertices();
-	t2.printVertices();
-
-
+	float vertices[] = { 0.2, 0.1, 0.0,
+						0.2, -0.3, 0.0,
+						-0.3, 0.3, 0.0 };
 
 	std::vector<drawTriangle> triangles;
-	triangles.push_back(t);
-	triangles.push_back(t2);
-		
+	drawTriangle newTriangle = drawTriangle(vertices, 9);
+	triangles.push_back(newTriangle);
+
+
 	while (!glfwWindowShouldClose(window)) { //rendering loop
 		processInput(window); //listens for key/mouse input
+		drawTriangle tempT = processSpaceKey(window, keyPressed);
+		if (*keyPressed == true) {
+			triangles.push_back(tempT);
+			*keyPressed = false;
+		}
 		glClear(GL_COLOR_BUFFER_BIT);
 		//for all rendering use this shader program
 		glUseProgram(shaderProgram);
 		//holy sh*t this works?!?!
-		for (int i = 0; i < triangles.at(0).countTriangle(); i++) {
-			glBindVertexArray(triangles.at(i).VAO);
-			glDrawArrays(GL_TRIANGLES, 0, 3);
+		if (!triangles.empty()) {
+			for (int i = 0; i < triangles.size(); i++) {
+				glBindVertexArray(triangles.at(i).VAO);
+				glDrawArrays(GL_TRIANGLES, 0, 3);
+			}
 		}
+		
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
