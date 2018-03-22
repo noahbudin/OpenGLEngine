@@ -17,6 +17,7 @@
 	//copy constructor?
 
 
+	//TODO Create only one instance of this object to handle all the triangles, send all triangles in VAO at once to buffer
 	void drawTriangle::newTriangle() {
 
 		//Creates VBO Buffer object, binds arraybuffer to VBO and sends the gpu the buffer with all the triangles's vertices

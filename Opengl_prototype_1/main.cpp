@@ -38,7 +38,10 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
-//gets random vertice array and spits out its pointer
+/**
+*TODO: Base this off width/height of the screen
+*gets random vertice array and spits out its pointer, this should maybe go in drawTriangles
+**/
 float* getRandVerts() {
 	float verts[9];
 	float triangleSize = 1.0f;
@@ -61,6 +64,7 @@ float* getRandVerts() {
 }
 
 //called to create a new triangle with random vertices
+//this is going to be in the trash soon!
 drawTriangle newTriangle() {
 	float* randVerts = getRandVerts();
 	float newT[9]; //may not need
@@ -76,7 +80,7 @@ drawTriangle newTriangle() {
 //checks for escape key, will close window
 void processInput(GLFWwindow* window) {
 	int escapeKey = glfwGetKey(window, GLFW_KEY_ESCAPE);
-	
+	int enterKey = glfwGetKey(window, GLFW_KEY_ENTER);//use for read/write file
 	if (escapeKey == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
 	}
@@ -222,7 +226,7 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT);
 		//for all rendering use this shader program
 		glUseProgram(shaderProgram);
-		//holy sh*t this works?!?!
+		//TODO change how this works so it is more friendly to the draw triangles class
 		if (!triangles.empty()) {
 			for (int i = 0; i < triangles.size(); i++) {
 				glBindVertexArray(triangles.at(i).VAO);
