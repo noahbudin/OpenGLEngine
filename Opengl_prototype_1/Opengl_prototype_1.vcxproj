@@ -127,6 +127,7 @@
     <ClCompile Include="drawTriangle.cpp" />
     <ClCompile Include="Libraries\glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ReadLevelInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="drawTriangle.h" />
@@ -134,6 +135,7 @@
     <ClInclude Include="Include\GLFW\glfw3.h" />
     <ClInclude Include="Include\KHR\khrplatform.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="ReadLevelInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Libraries\glfw3.lib" />
