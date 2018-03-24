@@ -2,17 +2,18 @@
 #include "ReadLevelInfo.h"
 
 ReadWriteLevelInfo::ReadWriteLevelInfo() {
-	filename = "tempFileName.txt";
+	filename = "LevelData/tempFileName.txt";
 }
 
 void ReadWriteLevelInfo::changeFilename() {
 	
-	char* newFilename = "";
+	std::string newFilename = "LevelData/";
+	std::string userInput;
 	std::cout << "Enter a new filename: ";
-	std::cin >> newFilename;
-	std::cout << std::endl;
-	std::cout << newFilename;
-	//filename = newFilename;
+	std::getline(std::cin, userInput);
+	newFilename = newFilename + userInput + ".txt";
+	std::cout << newFilename << std::endl;
+	filename = newFilename;
 }
 
 void ReadWriteLevelInfo::readFile() {
