@@ -13,10 +13,12 @@ public:
 	unsigned int VAO;
 	int size;
 	drawTriangle(std::array<float, 9> vertices, int arrSize);
+	drawTriangle();
 	void printVertices();
 	int countTriangle();
 
 private:
 	static int triangleCount;
-	void newTriangle();
+	void renderTriangle();
+	std::array<float, 9> getRandVerts();
 };

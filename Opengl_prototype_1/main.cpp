@@ -10,8 +10,6 @@ float green = 0.6f;
 float blue = 0.0f;
 const int width = 800;
 const int height = 600;
-bool p = false;
-bool* keyPressed = &p;
 char* previousState = "up";
 
 /**
@@ -41,7 +39,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 /**
 *TODO: Base this off width/height of the screen
 *gets random vertice array and spits out its pointer, this should maybe go in drawTriangles
-**/
+
 float* getRandVerts() {
 	float* verts = new float[9];
 	float triangleSize = 1.0f;
@@ -62,10 +60,10 @@ float* getRandVerts() {
 	}
 	return verts;
 }
+**/
 
-//called to create a new triangle with random vertices
+/**called to create a new triangle with random vertices
 //ALSO: NEVER EVER POINT A POINTER TO NON-DYNAMIC MEMORY IF IT IS RETURNED FROM A FUNCTION
-//this is going to be in the trash soon!
 drawTriangle newTriangle() {
 	float* randVerts = getRandVerts();
 	std::array<float, 9> newT;
@@ -77,6 +75,7 @@ drawTriangle newTriangle() {
 	t.printVertices();
 	return t;
 }
+**/
 
 //checks for escape key, will close window
 void processInput(GLFWwindow* window) {
@@ -89,27 +88,19 @@ void processInput(GLFWwindow* window) {
 }
 
 //checks for space key and places single random triangle on press
-drawTriangle processSpaceKey(GLFWwindow* window, bool* keyPressed) {
+bool processSpaceKey(GLFWwindow* window) {
 		int spaceKey = glfwGetKey(window, GLFW_KEY_SPACE);
 	
-		//defualt to return, need to clean this up
-		std::array<float, 9> vertices = { 0.2, 0.1, 0.0,
-						0.2, -0.3, 0.0,
-						-0.3, 0.3, 0.0 };
-
 		if (spaceKey == GLFW_RELEASE) {
 			previousState = "up";
 		}
-
 		if (spaceKey == GLFW_PRESS && previousState == "up") {
-			drawTriangle newT = newTriangle();
-			*keyPressed = true;
 			std::cout << "Space Key Pressed!" << std::endl;
 			previousState = "down";
-			return newT;
+			return true;
 		}
 		else {
-			return drawTriangle(vertices, 9);
+			return false;
 		}
 }
 
@@ -218,11 +209,11 @@ int main() {
 
 	while (!glfwWindowShouldClose(window)) { //rendering loop
 		processInput(window); //listens for key/mouse input
-		drawTriangle tempT = processSpaceKey(window, keyPressed);//listens for spacebar
-		if (*keyPressed == true) { //checks pointer booleans value to check whether to add triangle to vector or not (this is not a very good system)
+		if (processSpaceKey(window)) {
+			drawTriangle tempT = drawTriangle();
 			triangles.push_back(tempT);
-			*keyPressed = false;
 		}
+		
 		glClear(GL_COLOR_BUFFER_BIT);
 		//for all rendering use this shader program
 		glUseProgram(shaderProgram);

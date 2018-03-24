@@ -2,7 +2,7 @@
 
 	int drawTriangle::triangleCount = 0;
 
-	//constructor
+	//constructors
 	drawTriangle::drawTriangle(std::array <float, 9> vertices, int arrSize) {
 		this->size = arrSize;
 		this->vertices = vertices;
@@ -10,7 +10,18 @@
 		for (int i = 0; i < arrSize; i++) {
 			this->verts[i] = vertices[i];
 		}	
-		this->newTriangle();
+		this->renderTriangle();
+		this->countTriangle();
+	}
+
+	drawTriangle::drawTriangle() {
+		this->size = 9;
+		this->vertices = this->getRandVerts();
+		triangleCount++;
+		for (int i = 0; i < 9; i++) {
+			this->verts[i] = vertices[i];
+		}
+		this->renderTriangle();
 		this->countTriangle();
 	}
 
@@ -19,7 +30,7 @@
 
 
 	//TODO Create only one instance of this object to handle all the triangles, send all triangles in VAO at once to buffer
-	void drawTriangle::newTriangle() {
+	void drawTriangle::renderTriangle() {
 
 		//Creates VBO Buffer object, binds arraybuffer to VBO and sends the gpu the buffer with all the triangles's vertices
 		glGenVertexArrays(1, &this->VAO);
@@ -33,11 +44,32 @@
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
 	}
-
+	
 	void drawTriangle::printVertices() {
 		for (int i = 0; i < this->size; i++) {
 			std::cout << "index: " << i << " vertex: " << this->verts[i] << std::endl;
 		}
+	}
+	
+	std::array<float, 9> drawTriangle::getRandVerts() {
+		std::array<float, 9> verts;
+		float triangleSize = 1.0f;
+		
+		for (int i = 0; i < 9; i++) {
+			float newVert;
+			if (i + 1 % 3 == 0) {
+				newVert = 0.0f;
+			}
+			else {
+				float random1 = ((float)rand()) / (float)RAND_MAX;
+				float random2 = ((float)rand()) / (float)RAND_MAX;
+				float negVert = random1 * -triangleSize;
+				float posVert = random2 * triangleSize;
+				newVert = negVert + posVert;
+			}
+			verts[i] = newVert;
+		}
+		return verts;
 	}
 	
 	//kinda useless after random triangle implementation, maybe useful later after that is cleaned up?
