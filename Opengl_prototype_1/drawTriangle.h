@@ -7,18 +7,20 @@
 //class defs
 class drawTriangle {
 public:
-	float verts[9];
 	std::array<float, 9> vertices;
 	unsigned int VBO;
 	unsigned int VAO;
 	int size;
-	drawTriangle(std::array<float, 9> vertices, int arrSize);
-	drawTriangle();
+	drawTriangle(std::array<float, 9> vertices, int arrSize, unsigned int shaderProgram);
+	drawTriangle(unsigned int shaderProgram);
 	void printVertices();
 	int countTriangle();
+	void renderTriangle();
 
 private:
+	float verts[9];
+	unsigned int shaderProgram;
 	static int triangleCount;
-	void renderTriangle();
+	void initTriangle();
 	std::array<float, 9> getRandVerts();
 };

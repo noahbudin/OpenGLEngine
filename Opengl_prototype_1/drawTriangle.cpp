@@ -3,25 +3,27 @@
 	int drawTriangle::triangleCount = 0;
 
 	//constructors
-	drawTriangle::drawTriangle(std::array <float, 9> vertices, int arrSize) {
+	drawTriangle::drawTriangle(std::array <float, 9> vertices, int arrSize, unsigned int shaderProgram) {
+		this->shaderProgram = shaderProgram;
 		this->size = arrSize;
 		this->vertices = vertices;
 		triangleCount++;
 		for (int i = 0; i < arrSize; i++) {
 			this->verts[i] = vertices[i];
 		}	
-		this->renderTriangle();
+		this->initTriangle();
 		this->countTriangle();
 	}
 
-	drawTriangle::drawTriangle() {
+	drawTriangle::drawTriangle(unsigned int shaderProgram) {
+		this->shaderProgram = shaderProgram;
 		this->size = 9;
 		this->vertices = this->getRandVerts();
 		triangleCount++;
 		for (int i = 0; i < 9; i++) {
 			this->verts[i] = vertices[i];
 		}
-		this->renderTriangle();
+		this->initTriangle();
 		this->countTriangle();
 	}
 
@@ -30,19 +32,29 @@
 
 
 	//TODO Create only one instance of this object to handle all the triangles, send all triangles in VAO at once to buffer
-	void drawTriangle::renderTriangle() {
-
+	void drawTriangle::initTriangle() {
 		//Creates VBO Buffer object, binds arraybuffer to VBO and sends the gpu the buffer with all the triangles's vertices
 		glGenVertexArrays(1, &this->VAO);
 		glGenBuffers(1, &this->VBO);
-
-		glBindVertexArray(this->VAO);
-
+		
 		glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(this->verts), this->verts, GL_STATIC_DRAW); //copy vertice data into buffer array
 		
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glBindVertexArray(this->VAO);
 		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+	}
+	
+	void drawTriangle::renderTriangle() {
+		//for all rendering use this shader program
+		glUseProgram(shaderProgram);
+
+		glBindVertexArray(this->VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glBindVertexArray(0);
+		std::cout << "Rendering Triangles" << std::endl;
 	}
 	
 	void drawTriangle::printVertices() {
@@ -72,7 +84,6 @@
 		return verts;
 	}
 	
-	//kinda useless after random triangle implementation, maybe useful later after that is cleaned up?
 	int drawTriangle::countTriangle() {
 		return triangleCount;
 	}

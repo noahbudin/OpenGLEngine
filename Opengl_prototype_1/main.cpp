@@ -6,7 +6,7 @@
 /TODO: Clean up constants list, abstract into objects more?
 **/
 float red = 0.835f;
-float green = 0.6f;
+float green = 0.7f;
 float blue = 0.0f;
 const int width = 800;
 const int height = 600;
@@ -35,47 +35,6 @@ const char* fragShaderSource =
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
-
-/**
-*TODO: Base this off width/height of the screen
-*gets random vertice array and spits out its pointer, this should maybe go in drawTriangles
-
-float* getRandVerts() {
-	float* verts = new float[9];
-	float triangleSize = 1.0f;
-	
-	for (int i = 0; i < 9; i++) {
-		float newVert;
-		if (i + 1 % 3 == 0) {
-			newVert = 0.0f;
-		}
-		else {
-			float random1 = ((float)rand()) / (float)RAND_MAX;
-			float random2 = ((float)rand()) / (float)RAND_MAX;
-			float negVert = random1 * -triangleSize;
-			float posVert = random2 * triangleSize;
-			newVert = negVert + posVert;
-		}
-		verts[i] = newVert;
-	}
-	return verts;
-}
-**/
-
-/**called to create a new triangle with random vertices
-//ALSO: NEVER EVER POINT A POINTER TO NON-DYNAMIC MEMORY IF IT IS RETURNED FROM A FUNCTION
-drawTriangle newTriangle() {
-	float* randVerts = getRandVerts();
-	std::array<float, 9> newT;
-	for (int i = 0; i < 9; i++) {
-		newT.at(i) = *(randVerts + i);
-	}
-
-	drawTriangle t = drawTriangle(newT, 9);
-	t.printVertices();
-	return t;
-}
-**/
 
 //checks for escape key, will close window
 void processInput(GLFWwindow* window) {
@@ -164,7 +123,7 @@ int main() {
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); //kinda like an event listener, this is for resizing window
 
 	//wireframe mode
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	//store and compile vertex shader from above vertexShaderSource
 	unsigned int vertexShader;
@@ -206,22 +165,22 @@ int main() {
 	ri->writeFile(arr);
 	delete ri;
 	ri = nullptr;
+	/**
+	*END OF TEST AREA
+	**/
 
 	while (!glfwWindowShouldClose(window)) { //rendering loop
 		processInput(window); //listens for key/mouse input
 		if (processSpaceKey(window)) {
-			drawTriangle tempT = drawTriangle();
+			drawTriangle tempT = drawTriangle(shaderProgram);
 			triangles.push_back(tempT);
 		}
 		
 		glClear(GL_COLOR_BUFFER_BIT);
-		//for all rendering use this shader program
-		glUseProgram(shaderProgram);
 		//TODO change how this works so it is more friendly to the draw triangles class
 		if (!triangles.empty()) {
 			for (int i = 0; i < triangles.size(); i++) {
-				glBindVertexArray(triangles.at(i).VAO);
-				glDrawArrays(GL_TRIANGLES, 0, 3);
+				triangles.at(i).renderTriangle();
 			}
 		}
 	
