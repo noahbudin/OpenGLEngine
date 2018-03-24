@@ -6,11 +6,21 @@ ReadWriteLevelInfo::ReadWriteLevelInfo() {
 }
 
 void ReadWriteLevelInfo::changeFilename() {
-	
+	bool validInput = false;
+	std::string invalidChars = "0123456789!@#$%^&*()_+-=<>?,./;':\"[] {}\\\n";
 	std::string newFilename = "LevelData/";
 	std::string userInput;
-	std::cout << "Enter a new filename: ";
-	std::getline(std::cin, userInput);
+	while (validInput == false) {
+		validInput = true;
+		std::cout << "Enter a new filename: ";
+		std::getline(std::cin, userInput);
+		for (int i = 0; i < userInput.length(); i++) {
+			if (invalidChars.find(userInput[i]) != -1) {
+				std::cout << "Invalid character! Please only enter letters" << std::endl;
+				validInput = false;
+			}
+		}
+	}
 	newFilename = newFilename + userInput + ".txt";
 	std::cout << newFilename << std::endl;
 	filename = newFilename;
