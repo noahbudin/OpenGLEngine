@@ -3,14 +3,17 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include <fstream>
+#include <vector>
+#include "drawTriangle.h"
 
-class ReadLevelInfo{
+class ReadWriteLevelInfo{
 	private:
 		char* filename;
+
 	public:
-		ReadLevelInfo();
+		ReadWriteLevelInfo();
 		void changeFilename();
-		void writeFile(float* indiceArray);
+		void writeFile(std::vector<drawTriangle> triangles);
 		void readFile();
 
 };

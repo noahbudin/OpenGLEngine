@@ -37,12 +37,16 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 //checks for escape key, will close window
-void processInput(GLFWwindow* window) {
+void processInput(GLFWwindow* window, ReadWriteLevelInfo* readWrite, std::vector<drawTriangle> triangles) {
 	int escapeKey = glfwGetKey(window, GLFW_KEY_ESCAPE);
 	int rKey = glfwGetKey(window, GLFW_KEY_R);//use for read/write file
 	int wKey = glfwGetKey(window, GLFW_KEY_W);
 	if (escapeKey == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
+	}
+	if (wKey == GLFW_PRESS) {
+		readWrite->changeFilename();
+		readWrite->writeFile(triangles);
 	}
 }
 
@@ -94,8 +98,11 @@ void shaderProgramSuccess(unsigned int program, char* programType) {
 
 //main implementation
 int main() {
+	// generate random seed for rand() to use later
+	srand(static_cast <unsigned> (time(0))); 
 
-	srand(static_cast <unsigned> (time(0))); // generate random seed for rand() to use later
+	//initialize read/write object
+	ReadWriteLevelInfo* read = new ReadWriteLevelInfo();
 
 	glfwInit(); //intializes glfw 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); //window hint configures glfw options, 1st param is option, second is choice
@@ -156,21 +163,8 @@ int main() {
 
 	std::vector<drawTriangle> triangles;//stores all my triangles
 
-	/**
-	*TEST AREA	
-	**/
-	ReadLevelInfo* ri = new ReadLevelInfo();
-	float temp [4]= { 1.1f, 2.2f, 3.3f, -1.0f};//needs to terminate with a -1
-	float* arr = temp;
-	ri->writeFile(arr);
-	delete ri;
-	ri = nullptr;
-	/**
-	*END OF TEST AREA
-	**/
-
 	while (!glfwWindowShouldClose(window)) { //rendering loop
-		processInput(window); //listens for key/mouse input
+		processInput(window, read, triangles); //listens for key/mouse input
 		if (processSpaceKey(window)) {
 			drawTriangle tempT = drawTriangle(shaderProgram);
 			triangles.push_back(tempT);
