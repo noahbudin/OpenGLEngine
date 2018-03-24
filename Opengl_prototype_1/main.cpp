@@ -43,7 +43,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 *gets random vertice array and spits out its pointer, this should maybe go in drawTriangles
 **/
 float* getRandVerts() {
-	float verts[9];
+	float* verts = new float[9];
 	float triangleSize = 1.0f;
 	
 	for (int i = 0; i < 9; i++) {
@@ -64,12 +64,13 @@ float* getRandVerts() {
 }
 
 //called to create a new triangle with random vertices
+//ALSO: NEVER EVER POINT A POINTER TO NON-DYNAMIC MEMORY IF IT IS RETURNED FROM A FUNCTION
 //this is going to be in the trash soon!
 drawTriangle newTriangle() {
 	float* randVerts = getRandVerts();
-	float newT[9]; //may not need
+	std::array<float, 9> newT;
 	for (int i = 0; i < 9; i++) {
-		newT[i] = randVerts[i];
+		newT.at(i) = *(randVerts + i);
 	}
 
 	drawTriangle t = drawTriangle(newT, 9);
@@ -80,7 +81,8 @@ drawTriangle newTriangle() {
 //checks for escape key, will close window
 void processInput(GLFWwindow* window) {
 	int escapeKey = glfwGetKey(window, GLFW_KEY_ESCAPE);
-	int enterKey = glfwGetKey(window, GLFW_KEY_ENTER);//use for read/write file
+	int rKey = glfwGetKey(window, GLFW_KEY_R);//use for read/write file
+	int wKey = glfwGetKey(window, GLFW_KEY_W);
 	if (escapeKey == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
 	}
@@ -91,7 +93,7 @@ drawTriangle processSpaceKey(GLFWwindow* window, bool* keyPressed) {
 		int spaceKey = glfwGetKey(window, GLFW_KEY_SPACE);
 	
 		//defualt to return, need to clean this up
-		float vertices[] = { 0.2, 0.1, 0.0,
+		std::array<float, 9> vertices = { 0.2, 0.1, 0.0,
 						0.2, -0.3, 0.0,
 						-0.3, 0.3, 0.0 };
 
@@ -202,19 +204,17 @@ int main() {
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragShader);
 
+	std::vector<drawTriangle> triangles;//stores all my triangles
 
 	/**
-	/TEST TRIANGLE
-	float vertices[] = { 0.2, 0.1, 0.0,
-						0.2, -0.3, 0.0,
-						-0.3, 0.3, 0.0 };
-
-	std::vector<drawTriangle> triangles;
-	drawTriangle newTriangle = drawTriangle(vertices, 9);
-	triangles.push_back(newTriangle);
+	*TEST AREA	
 	**/
-
-	std::vector<drawTriangle> triangles;//stores all my triangles
+	ReadLevelInfo* ri = new ReadLevelInfo();
+	float temp [4]= { 1.1f, 2.2f, 3.3f, -1.0f};//needs to terminate with a -1
+	float* arr = temp;
+	ri->writeFile(arr);
+	delete ri;
+	ri = nullptr;
 
 	while (!glfwWindowShouldClose(window)) { //rendering loop
 		processInput(window); //listens for key/mouse input

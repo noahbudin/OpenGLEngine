@@ -9,8 +9,8 @@ class ReadLevelInfo{
 		char* filename;
 	public:
 		ReadLevelInfo();
-		void changeFilename(char* newFilename);
-		void writeFile();
+		void changeFilename();
+		void writeFile(float* indiceArray);
 		void readFile();
 
 };

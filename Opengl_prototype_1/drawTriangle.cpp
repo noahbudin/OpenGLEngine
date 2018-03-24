@@ -3,8 +3,9 @@
 	int drawTriangle::triangleCount = 0;
 
 	//constructor
-	drawTriangle::drawTriangle(float vertices[], int arrSize) {
+	drawTriangle::drawTriangle(std::array <float, 9> vertices, int arrSize) {
 		this->size = arrSize;
+		this->vertices = vertices;
 		triangleCount++;
 		for (int i = 0; i < arrSize; i++) {
 			this->verts[i] = vertices[i];
