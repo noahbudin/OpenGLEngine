@@ -12,34 +12,14 @@ const int width = 800;
 const int height = 600;
 char* previousState = "up";
 
-/**
-/SHADERS 
-/TODO: Read shaders from a file instead of writing to a string here
-/Writing into a GLSL file would enable color changes ect...
-**/
-const char* vertexShaderSource = 
-	"#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-	"}\0";
-
-const char* fragShaderSource =
-	"#version 330 core\n"
-	"out vec4 FragColor;\n"
-	"void main(){\n"
-	"FragColor = vec4(0.0f, 0.4f, 1.0f, 1.0f);\n"
-	"}\0";
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
 //checks for escape key, will close window
-void processInput(GLFWwindow* window, ReadWriteLevelInfo* readWrite, std::vector<drawTriangle> triangles) {
+void processInput(GLFWwindow* window, ReadWriteLevelInfo* readWrite, std::vector<drawTriangle*> triangles) {
 	int escapeKey = glfwGetKey(window, GLFW_KEY_ESCAPE);
-	int rKey = glfwGetKey(window, GLFW_KEY_R);//use for read/write file
+	int rKey = glfwGetKey(window, GLFW_KEY_R);
 	int wKey = glfwGetKey(window, GLFW_KEY_W);
 	if (escapeKey == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
@@ -47,6 +27,10 @@ void processInput(GLFWwindow* window, ReadWriteLevelInfo* readWrite, std::vector
 	if (wKey == GLFW_PRESS) {
 		readWrite->changeFilename();
 		readWrite->writeFile(triangles);
+	}
+	if (rKey == GLFW_PRESS) {
+		triangles.clear();
+		triangles = readWrite->readFile();
 	}
 }
 
@@ -67,34 +51,7 @@ bool processSpaceKey(GLFWwindow* window) {
 		}
 }
 
-//Both success functions give errors if there are any problems with shaders
-void shaderSuccess(unsigned int shader, char* shaderType) {
-	int success;
-	char infoLog[512];
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 
-	if (!success) {
-		glGetShaderInfoLog(shader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER_COMPILATION_FAILURE-->" << shaderType << std::endl;
-	}
-	else {
-		std::cout << "SHADER_COMPILATION_SUCCEEDED-->" << shaderType << std::endl;
-	}
-
-}
-
-void shaderProgramSuccess(unsigned int program, char* programType) {
-	int success;
-	char infoLog[512];
-	glGetProgramiv(program, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(program, 512, NULL, infoLog);
-		std::cout << "ERROR::PROGRAM_LINKING_ERROR-->" << programType << std::endl;
-	}
-	else {
-		std::cout << "PROGRAM_LINK_SUCCESS-->" << programType << std::endl;
-	}
-}
 
 //main implementation
 int main() {
@@ -132,41 +89,12 @@ int main() {
 	//wireframe mode
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	//store and compile vertex shader from above vertexShaderSource
-	unsigned int vertexShader;
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-	
-	unsigned int fragShader;
-	fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragShader, 1, &fragShaderSource, NULL);
-	glCompileShader(fragShader);
-
-	//confirm the shader compilation did not burn to the ground
-	shaderSuccess(vertexShader, "Vertex Shader");
-	shaderSuccess(fragShader, "Fragment Shader");
-
-	//link shaders together in a shader program and create the program
-	unsigned int shaderProgram;
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragShader);
-	glLinkProgram(shaderProgram);
-	
-	//confirm successful linking
-	shaderProgramSuccess(shaderProgram, "Vertex and Fragment Link");
-	
-	//delete shaders after they've been linked
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragShader);
-
-	std::vector<drawTriangle> triangles;//stores all my triangles
+	std::vector<drawTriangle*> triangles;//stores all my triangles
 
 	while (!glfwWindowShouldClose(window)) { //rendering loop
 		processInput(window, read, triangles); //listens for key/mouse input
 		if (processSpaceKey(window)) {
-			drawTriangle tempT = drawTriangle(shaderProgram);
+			drawTriangle* tempT = new drawTriangle();
 			triangles.push_back(tempT);
 		}
 		
@@ -174,7 +102,7 @@ int main() {
 		//TODO change how this works so it is more friendly to the draw triangles class
 		if (!triangles.empty()) {
 			for (int i = 0; i < triangles.size(); i++) {
-				triangles.at(i).renderTriangle();
+				triangles.at(i)->renderTriangle();
 			}
 		}
 	
@@ -182,11 +110,11 @@ int main() {
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+	
+	std::cout << "triangles in vector: " << triangles.size();
 
-	//delete objects
 	for (int i = 0; i < triangles.size(); i++) {
-		glDeleteVertexArrays(1, &triangles.at(i).VAO);
-		glDeleteBuffers(1, &triangles.at(i).VBO);
+		delete triangles[i];
 	}
 
 	glfwTerminate(); //safely deletes all objects and stuff with glfw

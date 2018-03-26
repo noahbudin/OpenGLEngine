@@ -1,10 +1,31 @@
 #include "drawTriangle.h"
 
 	int drawTriangle::triangleCount = 0;
+	
+	/**
+	/SHADERS 
+	/TODO: Read shaders from a file instead of writing to a string here
+	/Writing into a GLSL file would enable color changes ect...
+	**/
+	
+	const char* drawTriangle::vertexShaderSource = 
+		"#version 330 core\n"
+		"layout (location = 0) in vec3 aPos;\n"
+		"void main()\n"
+		"{\n"
+		"gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+		"}\0";
+	
+	const char* drawTriangle::fragShaderSource = 
+		"#version 330 core\n"
+		"out vec4 FragColor;\n"
+		"void main(){\n"
+		"FragColor = vec4(0.0f, 0.4f, 1.0f, 1.0f);\n"
+		"}\0";
 
 	//constructors
-	drawTriangle::drawTriangle(std::array <float, 9> vertices, int arrSize, unsigned int shaderProgram) {
-		this->shaderProgram = shaderProgram;
+	drawTriangle::drawTriangle(std::array <float, 9> vertices, int arrSize) {
+		this->shaderProgram = this->createShaderProgram();
 		this->size = arrSize;
 		this->vertices = vertices;
 		triangleCount++;
@@ -15,8 +36,8 @@
 		this->countTriangle();
 	}
 
-	drawTriangle::drawTriangle(unsigned int shaderProgram) {
-		this->shaderProgram = shaderProgram;
+	drawTriangle::drawTriangle() {
+		this->shaderProgram = this->createShaderProgram();
 		this->size = 9;
 		this->vertices = this->getRandVerts();
 		triangleCount++;
@@ -27,9 +48,44 @@
 		this->countTriangle();
 	}
 
-	//TODO Destructor, not a super big deal now though
-	//copy constructor?
+	drawTriangle::~drawTriangle() {
+			glDeleteVertexArrays(1, &this->VAO);
+			glDeleteBuffers(1, &this->VBO);
+			//delete[] this->verts;
+	}
+	
+	unsigned int drawTriangle:: createShaderProgram() {
+		//store and compile vertex shader from above vertexShaderSource
+		unsigned int vertexShader;
+		vertexShader = glCreateShader(GL_VERTEX_SHADER);
+		glShaderSource(vertexShader, 1, &this->vertexShaderSource, NULL);
+		glCompileShader(vertexShader);
+		
+		unsigned int fragShader;
+		fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+		glShaderSource(fragShader, 1, &this->fragShaderSource, NULL);
+		glCompileShader(fragShader);
 
+		//confirm the shader compilation did not burn to the ground
+		this->shaderSuccess(vertexShader, "Vertex Shader");
+		this->shaderSuccess(fragShader, "Fragment Shader");
+
+		//link shaders together in a shader program and create the program
+		unsigned int shaderProgram;
+		shaderProgram = glCreateProgram();
+		glAttachShader(shaderProgram, vertexShader);
+		glAttachShader(shaderProgram, fragShader);
+		glLinkProgram(shaderProgram);
+		
+		//confirm successful linking
+		this->shaderProgramSuccess(shaderProgram, "Vertex and Fragment Link");
+		
+		//delete shaders after they've been linked
+		glDeleteShader(vertexShader);
+		glDeleteShader(fragShader);
+
+		return shaderProgram;
+	};
 
 	//TODO Create only one instance of this object to handle all the triangles, send all triangles in VAO at once to buffer
 	void drawTriangle::initTriangle() {
@@ -85,4 +141,33 @@
 	
 	int drawTriangle::countTriangle() {
 		return triangleCount;
+	}
+
+	//Both success functions give errors if there are any problems with shaders
+	void drawTriangle::shaderSuccess(unsigned int shader, char* shaderType) {
+		int success;
+		char infoLog[512];
+		glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+
+		if (!success) {
+			glGetShaderInfoLog(shader, 512, NULL, infoLog);
+			std::cout << "ERROR::SHADER_COMPILATION_FAILURE-->" << shaderType << std::endl;
+		}
+		else {
+			std::cout << "SHADER_COMPILATION_SUCCEEDED-->" << shaderType << std::endl;
+		}
+
+	}
+
+	void drawTriangle::shaderProgramSuccess(unsigned int program, char* programType) {
+		int success;
+		char infoLog[512];
+		glGetProgramiv(program, GL_LINK_STATUS, &success);
+		if (!success) {
+			glGetProgramInfoLog(program, 512, NULL, infoLog);
+			std::cout << "ERROR::PROGRAM_LINKING_ERROR-->" << programType << std::endl;
+		}
+		else {
+			std::cout << "PROGRAM_LINK_SUCCESS-->" << programType << std::endl;
+		}
 	}

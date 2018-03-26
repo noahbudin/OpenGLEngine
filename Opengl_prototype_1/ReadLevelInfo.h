@@ -10,11 +10,11 @@
 class ReadWriteLevelInfo{
 	private:
 		std::string filename;
+		std::string validateInput();
 
 	public:
 		ReadWriteLevelInfo();
 		void changeFilename();
-		void writeFile(std::vector<drawTriangle> triangles);
-		void readFile();
-
+		void writeFile(std::vector<drawTriangle*> triangles);
+		std::vector<drawTriangle*> readFile();
 };
