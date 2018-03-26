@@ -7,7 +7,7 @@ ReadWriteLevelInfo::ReadWriteLevelInfo() {
 
 std::string ReadWriteLevelInfo::validateInput() {
 	bool validInput = false;
-	std::string invalidChars = "0123456789!@#$%^&*()_+-=<>?,./;':\"[] {}\\\n";
+	std::string invalidChars = "0123456789!@#$%^&*()+-=<>?,./;':\"[] {}\\\n";
 	std::string userInput;
 
 	while (validInput == false) {
@@ -21,25 +21,47 @@ std::string ReadWriteLevelInfo::validateInput() {
 			}
 		}
 	}
-	return userInput;
+
+	std::string newFilename = "LevelData/";
+	newFilename = newFilename + userInput + ".txt";
+	std::cout << newFilename << std::endl;
+	return newFilename;
 }
 
 void ReadWriteLevelInfo::changeFilename() {
 	std::string input = validateInput();
-	std::string newFilename = "LevelData/";
-	newFilename = newFilename + input + ".txt";
-	std::cout << newFilename << std::endl;
-	filename = newFilename;
+	this->filename = input;
 }
 
 std::vector<drawTriangle*> ReadWriteLevelInfo::readFile() {
+	std::cout << "Read File" << std::endl;
 	std::vector<drawTriangle*> triangleList;
+	std::ifstream inFile;
+	std::string input = "";
+	char x;
+	bool exists = false;
+	
+	while (!exists) {//check that file exists
+		input = this->validateInput();
+		std::ifstream inFile(input);
+		if (inFile.good()) {
+			std::cout << "Success!" << std::endl;
+			exists = true;
+		}
+		else {
+			std::cout << "Filename does not exist!" << std::endl;
+		}
+	}
+	
+	inFile.close();
+	
 	drawTriangle* newT = new drawTriangle();
 	triangleList.push_back(newT);
 	return triangleList;
 }
 
 void ReadWriteLevelInfo::writeFile(std::vector<drawTriangle*> triangles) {
+	std::cout << "Write File" << std::endl;
 	std::ofstream ofstr;
 	ofstr.open(filename);
 

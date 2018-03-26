@@ -7,7 +7,6 @@
 	/TODO: Read shaders from a file instead of writing to a string here
 	/Writing into a GLSL file would enable color changes ect...
 	**/
-	
 	const char* drawTriangle::vertexShaderSource = 
 		"#version 330 core\n"
 		"layout (location = 0) in vec3 aPos;\n"

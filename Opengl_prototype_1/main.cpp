@@ -51,9 +51,7 @@ bool processSpaceKey(GLFWwindow* window) {
 		}
 }
 
-
-
-//main implementation
+//main
 int main() {
 	// generate random seed for rand() to use later
 	srand(static_cast <unsigned> (time(0))); 
@@ -74,6 +72,7 @@ int main() {
 		glfwTerminate();
 		return -1;
 	}
+	
 	glfwMakeContextCurrent(window);
 	
 	//use GLAD to manage pointers to opengl functions
@@ -111,8 +110,7 @@ int main() {
 		glfwPollEvents();
 	}
 	
-	std::cout << "triangles in vector: " << triangles.size();
-
+	//delete triangles
 	for (int i = 0; i < triangles.size(); i++) {
 		delete triangles[i];
 	}
