@@ -1,6 +1,6 @@
 #include "main.h"
 #include <iostream>
-
+//INITIALIZE ALL POINTERS TO NULL AND CHECK BEFORE USING
 /**
 /CONSTANTS
 /TODO: Clean up constants list, abstract into objects more?
@@ -17,7 +17,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 //checks for escape key, will close window
-void processInput(GLFWwindow* window, ReadWriteLevelInfo* readWrite, std::vector<drawTriangle*> triangles) {
+std::vector<drawTriangle*>* processInput(GLFWwindow* window, ReadWriteLevelInfo* readWrite, std::vector<drawTriangle*>* triangles) {
 	int escapeKey = glfwGetKey(window, GLFW_KEY_ESCAPE);
 	int rKey = glfwGetKey(window, GLFW_KEY_R);
 	int wKey = glfwGetKey(window, GLFW_KEY_W);
@@ -25,13 +25,21 @@ void processInput(GLFWwindow* window, ReadWriteLevelInfo* readWrite, std::vector
 		glfwSetWindowShouldClose(window, true);
 	}
 	if (wKey == GLFW_PRESS) {
-		readWrite->changeFilename();
 		readWrite->writeFile(triangles);
 	}
 	if (rKey == GLFW_PRESS) {
-		triangles.clear();
+		//clears triangles vector and calls their destructors
+		if (triangles->size() != 0) {
+			for (int i = 0; i < triangles->size(); i++) {
+				delete triangles->at(i);
+				triangles->at(i) = NULL;
+			}
+			delete triangles;
+		}
 		triangles = readWrite->readFile();
+		std::cout << "DONE" << std::endl;
 	}
+	return triangles;
 }
 
 //checks for space key and places single random triangle on press
@@ -88,20 +96,20 @@ int main() {
 	//wireframe mode
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	std::vector<drawTriangle*> triangles;//stores all my triangles
+	std::vector<drawTriangle*>* triangles = new std::vector<drawTriangle*>;//stores all my triangles
 
 	while (!glfwWindowShouldClose(window)) { //rendering loop
-		processInput(window, read, triangles); //listens for key/mouse input
+		triangles = processInput(window, read, triangles); //listens for key/mouse input
 		if (processSpaceKey(window)) {
 			drawTriangle* tempT = new drawTriangle();
-			triangles.push_back(tempT);
+			triangles->push_back(tempT);
 		}
 		
 		glClear(GL_COLOR_BUFFER_BIT);
 		//TODO change how this works so it is more friendly to the draw triangles class
-		if (!triangles.empty()) {
-			for (int i = 0; i < triangles.size(); i++) {
-				triangles.at(i)->renderTriangle();
+		if (!triangles->empty()) {
+			for (int i = 0; i < triangles->size(); i++) {
+				triangles->at(i)->renderTriangle();
 			}
 		}
 	
@@ -111,9 +119,10 @@ int main() {
 	}
 	
 	//delete triangles
-	for (int i = 0; i < triangles.size(); i++) {
-		delete triangles[i];
+	for (int i = 0; i < triangles->size(); i++) {
+		delete triangles->at(i);
 	}
+	delete read;
 
 	glfwTerminate(); //safely deletes all objects and stuff with glfw
 

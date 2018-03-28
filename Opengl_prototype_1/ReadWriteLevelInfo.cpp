@@ -2,7 +2,7 @@
 #include "ReadLevelInfo.h"
 
 ReadWriteLevelInfo::ReadWriteLevelInfo() {
-	filename = "LevelData/tempFileName.txt";
+	this->filename = "LevelData/tempFileName.txt";
 }
 
 std::string ReadWriteLevelInfo::validateInput() {
@@ -22,28 +22,35 @@ std::string ReadWriteLevelInfo::validateInput() {
 		}
 	}
 
-	std::string newFilename = "LevelData/";
-	newFilename = newFilename + userInput + ".txt";
-	std::cout << newFilename << std::endl;
-	return newFilename;
+	return userInput;
 }
 
 void ReadWriteLevelInfo::changeFilename() {
 	std::string input = validateInput();
+	//need to not change filename to cancel later on
+	if (input == "cancel" || "c") {
+		this->filename = "cancel";
+		return;
+	}
+	std::string directory = "LevelData/";
+	input = directory + input + ".txt";
 	this->filename = input;
 }
 
-std::vector<drawTriangle*> ReadWriteLevelInfo::readFile() {
+std::vector<drawTriangle*>* ReadWriteLevelInfo::readFile() {
 	std::cout << "Read File" << std::endl;
-	std::vector<drawTriangle*> triangleList;
+	std::vector<drawTriangle*>* triangleList = new std::vector<drawTriangle*>;
 	std::ifstream inFile;
-	std::string input = "";
-	char x;
+	std::string x;
 	bool exists = false;
 	
 	while (!exists) {//check that file exists
-		input = this->validateInput();
-		std::ifstream inFile(input);
+		this->changeFilename();
+		if (this->filename == "cancel") {
+			return triangleList;
+		}
+
+		std::ifstream inFile(this->filename);
 		if (inFile.good()) {
 			std::cout << "Success!" << std::endl;
 			exists = true;
@@ -53,27 +60,48 @@ std::vector<drawTriangle*> ReadWriteLevelInfo::readFile() {
 		}
 	}
 	
+	inFile.open(this->filename);
+
+	while (std::getline(inFile, x)) {
+		std::vector<float> newTVerts;
+		float passedVerts[9];
+		for (int i = 1; i < x.size() + 1; i++) {
+			if (i % 2 == 0) {
+				newTVerts.push_back(x[i]);
+			}
+		}
+		for (int i = 0; i < 9; i++) {
+			passedVerts[i] = newTVerts.at(i);
+		}
+		for (int i = 0; i < 9; i++) {
+			std::cout << passedVerts[i] << std::endl;
+		}
+		drawTriangle* newT = new drawTriangle();
+		triangleList->push_back(newT);	
+	}
+
 	inFile.close();
 	
-	drawTriangle* newT = new drawTriangle();
-	triangleList.push_back(newT);
 	return triangleList;
 }
 
-void ReadWriteLevelInfo::writeFile(std::vector<drawTriangle*> triangles) {
+void ReadWriteLevelInfo::writeFile(std::vector<drawTriangle*>* triangles) {
 	std::cout << "Write File" << std::endl;
+	this->changeFilename();
+	if (this->filename == "cancel") {
+		return;
+	}
 	std::ofstream ofstr;
-	ofstr.open(filename);
-
-	for (int i = 0; i < triangles.size(); i++) {
+	ofstr.open(this->filename);
+	for (int i = 0; i < triangles->size(); i++) {
 		ofstr << "{";
 		for (int z = 0; z < 9; z++) {
 			//write to file index i
 			if (z < 9 - 1) {
-				ofstr << triangles.at(i)->vertices.at(z) << ",";
+				ofstr << triangles->at(i)->vertices.at(z) << ",";
 			}
 			else {
-				ofstr << triangles.at(i)->vertices.at(z);
+				ofstr << triangles->at(i)->vertices.at(z);
 			}
 		}
 		ofstr << "}\n";
