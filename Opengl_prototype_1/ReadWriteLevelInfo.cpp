@@ -49,7 +49,7 @@ std::vector<drawTriangle*>* ReadWriteLevelInfo::readFile(std::vector<drawTriangl
 	while (!exists) {//check that file exists
 		this->changeFilename();
 		std::ifstream inFile(this->filename);
-		if (inFile.good()) {
+		if (inFile.good() || this->filename == "cancel") {
 			std::cout << "Success!" << std::endl;
 			exists = true;
 		}
