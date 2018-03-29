@@ -1,6 +1,5 @@
 #include "main.h"
 #include <iostream>
-//INITIALIZE ALL POINTERS TO NULL AND CHECK BEFORE USING
 /**
 /CONSTANTS
 /TODO: Clean up constants list, abstract into objects more?
@@ -94,6 +93,10 @@ int main() {
 	std::vector<drawTriangle*>* triangles = new std::vector<drawTriangle*>;//stores all my triangles
 
 	while (!glfwWindowShouldClose(window)) { //rendering loop
+		currShader.use();
+		float timeValue = glfwGetTime();
+		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+		currShader.setFloat("ourColor", 0.0f, greenValue, 0.0f);
 		triangles = processInput(window, read, triangles); //listens for key/mouse input
 		if (processSpaceKey(window)) {
 			drawTriangle* tempT = new drawTriangle();

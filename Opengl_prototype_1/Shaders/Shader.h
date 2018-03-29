@@ -8,12 +8,10 @@
 #include <sstream>
 #include <iostream>
 
-class Shader
-{
+class Shader{
 public:
 	unsigned int ID;
-	Shader(const char* vertexPath, const char* fragmentPath)
-	{
+	Shader(const char* vertexPath, const char* fragmentPath){
 		//retrieve the vertex/fragment source code from filePath
 		std::string vertexCode;
 		std::string fragmentCode;
@@ -22,8 +20,7 @@ public:
 		// ensure ifstream objects can throw exceptions, may want to change so program doesn't crash if these are thrown
 		vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 		fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-		try
-		{
+		try{
 			// open files
 			vShaderFile.open(vertexPath);
 			fShaderFile.open(fragmentPath);
@@ -38,8 +35,7 @@ public:
 			vertexCode = vShaderStream.str();
 			fragmentCode = fShaderStream.str();
 		}
-		catch (std::ifstream::failure e)
-		{
+		catch (std::ifstream::failure e){
 			std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
 		}
 		const char* vShaderCode = vertexCode.c_str();
@@ -79,8 +75,9 @@ public:
 	void setInt(const std::string &name, int value) const{
 		glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 	}
-	void setFloat(const std::string &name, float value) const{
-		glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+	void setFloat(const std::string &name, float red, float green, float blue) const{
+		float alpha = 1.0f; //no transparency for now
+		glUniform4f(glGetUniformLocation(ID, name.c_str()), red, green, blue, alpha);
 	}
 
 private:

@@ -50,7 +50,6 @@ std::vector<drawTriangle*>* ReadWriteLevelInfo::readFile(std::vector<drawTriangl
 		this->changeFilename();
 		std::ifstream inFile(this->filename);
 		if (inFile.good() || this->filename == "cancel") {
-			std::cout << "Success!" << std::endl;
 			exists = true;
 		}
 		else {
@@ -88,12 +87,14 @@ std::vector<drawTriangle*>* ReadWriteLevelInfo::readFile(std::vector<drawTriangl
 			triangleList->push_back(newT);
 		}
 		inFile.close();
+		std::cout << "Success!" << std::endl;
 	}
 
 	else {
 		delete triangleList;
 		triangleList = triangles;
 		this->filename = lastFilename;
+		std::cout << "Read canceled..." << std::endl;
 	}
 	
 	return triangleList;
@@ -103,6 +104,7 @@ void ReadWriteLevelInfo::writeFile(std::vector<drawTriangle*>* triangles) {
 	std::cout << "Write File" << std::endl;
 	this->changeFilename();
 	if (this->filename == "cancel") {
+		std::cout << "Write canceled..." << std::endl;
 		return;
 	}
 	std::ofstream ofstr;
@@ -121,4 +123,5 @@ void ReadWriteLevelInfo::writeFile(std::vector<drawTriangle*>* triangles) {
 		ofstr << "}\n";
 	}
 	ofstr.close();
+	std::cout << "Success!" << std::endl;
 }
