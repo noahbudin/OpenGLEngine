@@ -17,5 +17,5 @@ class ReadWriteLevelInfo{
 		ReadWriteLevelInfo();
 		void changeFilename();
 		void writeFile(std::vector<drawTriangle*>* triangles);
-		std::vector<drawTriangle*>* readFile();
+		std::vector<drawTriangle*>* readFile(std::vector<drawTriangle*>* triangles);
 };

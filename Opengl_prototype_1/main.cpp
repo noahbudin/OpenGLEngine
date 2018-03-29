@@ -28,15 +28,8 @@ std::vector<drawTriangle*>* processInput(GLFWwindow* window, ReadWriteLevelInfo*
 		readWrite->writeFile(triangles);
 	}
 	if (rKey == GLFW_PRESS) {
-		//clears triangles vector and calls their destructors
-		if (triangles->size() != 0) {
-			for (int i = 0; i < triangles->size(); i++) {
-				delete triangles->at(i);
-				triangles->at(i) = NULL;
-			}
-			delete triangles;
-		}
-		triangles = readWrite->readFile();
+		//std::vector<drawTriangle*>* temp = new std::vector<drawTriangle*>;
+		triangles = readWrite->readFile(triangles);
 		std::cout << "DONE" << std::endl;
 	}
 	return triangles;
