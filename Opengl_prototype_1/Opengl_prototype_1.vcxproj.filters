@@ -47,8 +47,15 @@
     <ClInclude Include="ReadLevelInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Shaders\Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="Libraries\glfw3.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\triangleFrag.frag" />
+    <None Include="Shaders\triangleVert.vert" />
   </ItemGroup>
 </Project>

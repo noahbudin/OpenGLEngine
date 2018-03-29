@@ -88,6 +88,8 @@ int main() {
 
 	//wireframe mode
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	Shader currShader = Shader("Shaders/triangleVert.vert", "Shaders/triangleFrag.frag");
+	currShader.use();
 
 	std::vector<drawTriangle*>* triangles = new std::vector<drawTriangle*>;//stores all my triangles
 
