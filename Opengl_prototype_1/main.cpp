@@ -86,7 +86,7 @@ int main() {
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); //kinda like an event listener, this is for resizing window
 
 	//wireframe mode
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	Shader currShader = Shader("Shaders/triangleVert.vert", "Shaders/triangleFrag.frag");
 	currShader.use();
 
@@ -95,8 +95,10 @@ int main() {
 	while (!glfwWindowShouldClose(window)) { //rendering loop
 		currShader.use();
 		float timeValue = glfwGetTime();
-		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-		currShader.setFloat("ourColor", 0.0f, greenValue, 0.0f);
+		green = (sin(timeValue));
+		blue = (sin(timeValue) + timeValue);
+		red = (sin(timeValue));
+		currShader.setFloat("ourColor", red, green, blue);
 		triangles = processInput(window, read, triangles); //listens for key/mouse input
 		if (processSpaceKey(window)) {
 			drawTriangle* tempT = new drawTriangle();
