@@ -1,73 +1,65 @@
-//test for both computers
 #include "main.h"
 #include <iostream>
+//INITIALIZE ALL POINTERS TO NULL AND CHECK BEFORE USING
 /**
 /CONSTANTS
+/TODO: Clean up constants list, abstract into objects more?
 **/
-float red = 0.0f;
-float green = 0.75f;
-float blue = 0.5f;
-static int width = 800;
-static int height = 600;
-
-/**
-/SHADERS 
-/TODO: Read shaders from a text file instead of writing to a string here
-**/
-const char* vertexShaderSource = 
-	"#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-	"}\0";
-
-const char* fragShaderSource =
-	"#version 330 core\n"
-	"out vec4 FragColor;\n"
-	"void main(){\n"
-	"FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-	"}\0";
+float red = 0.835f;
+float green = 0.7f;
+float blue = 0.0f;
+const int width = 800;
+const int height = 600;
+char* previousState = "up";
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow* window) {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+//checks for escape key, will close window
+std::vector<drawTriangle*>* processInput(GLFWwindow* window, ReadWriteLevelInfo* readWrite, std::vector<drawTriangle*>* triangles) {
+	int escapeKey = glfwGetKey(window, GLFW_KEY_ESCAPE);
+	int rKey = glfwGetKey(window, GLFW_KEY_R);
+	int wKey = glfwGetKey(window, GLFW_KEY_W);
+	if (escapeKey == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
 	}
+	if (wKey == GLFW_PRESS) {
+		readWrite->writeFile(triangles);
+	}
+	if (rKey == GLFW_PRESS) {
+		//std::vector<drawTriangle*>* temp = new std::vector<drawTriangle*>;
+		triangles = readWrite->readFile(triangles);
+		std::cout << "DONE" << std::endl;
+	}
+	return triangles;
 }
 
-void shaderSuccess(unsigned int shader, char* shaderType) {
-	int success;
-	char infoLog[512];
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-
-	if (!success) {
-		glGetShaderInfoLog(shader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER_COMPILATION_FAILURE-->" << shaderType << std::endl;
-	}
-	else {
-		std::cout << "SHADER_COMPILATION_SUCCEEDED-->" << shaderType << std::endl;
-	}
-
+//checks for space key and places single random triangle on press
+bool processSpaceKey(GLFWwindow* window) {
+		int spaceKey = glfwGetKey(window, GLFW_KEY_SPACE);
+	
+		if (spaceKey == GLFW_RELEASE) {
+			previousState = "up";
+		}
+		if (spaceKey == GLFW_PRESS && previousState == "up") {
+			std::cout << "Space Key Pressed!" << std::endl;
+			previousState = "down";
+			return true;
+		}
+		else {
+			return false;
+		}
 }
 
-void shaderProgramSuccess(unsigned int program, char* programType) {
-	int success;
-	char infoLog[512];
-	glGetProgramiv(program, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(program, 512, NULL, infoLog);
-		std::cout << "ERROR::PROGRAM_LINKING_ERROR-->" << programType << std::endl;
-	}
-	else {
-		std::cout << "PROGRAM_LINK_SUCCESS-->" << programType << std::endl;
-	}
-}
-
+//main
 int main() {
+	// generate random seed for rand() to use later
+	srand(static_cast <unsigned> (time(0))); 
+
+	//initialize read/write object
+	ReadWriteLevelInfo* read = new ReadWriteLevelInfo();
+
 	glfwInit(); //intializes glfw 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); //window hint configures glfw options, 1st param is option, second is choice
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -81,8 +73,9 @@ int main() {
 		glfwTerminate();
 		return -1;
 	}
+	
 	glfwMakeContextCurrent(window);
-
+	
 	//use GLAD to manage pointers to opengl functions
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cout << "Failed to initialize GLAD" << std::endl;
@@ -93,89 +86,38 @@ int main() {
 	glClearColor(red, green, blue, 0.0f); //put colors in seperate vars later
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); //kinda like an event listener, this is for resizing window
 
-	//Triangle vertices
-	float firstTriangle[] = {
-		-0.9f, -0.5f, 0.0f,  // left 
-		-0.0f, -0.5f, 0.0f,  // right
-		-0.45f, 0.5f, 0.0f,  // top 
-	};
-
-	float secondTriangle[] = {
-		0.0f, -0.5f, 0.0f,  // left
-		0.9f, -0.5f, 0.0f,  // right
-		0.45f, 0.5f, 0.0f   // top 
-	};
-
-	//Creates VBO Buffer object, binds arraybuffer to VBO and sends the gpu the buffer with all the triangles's vertices
-	unsigned int VBO[2], VAO[2];
-	glGenVertexArrays(2, VAO);
-	glGenBuffers(2, VBO);
-
-	glBindVertexArray(VAO[0]);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(firstTriangle), firstTriangle, GL_STATIC_DRAW); //copy vertice data into buffer array
-	
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	//vertex arrays remember the pointer settings we just made, just bind appropriate buffer to use those settings
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-	glBindVertexArray(VAO[1]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(secondTriangle), secondTriangle, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
 	//wireframe mode
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	//store and compile vertex shader from above vertexShaderSource
-	unsigned int vertexShader;
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-	
-	unsigned int fragShader;
-	fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragShader, 1, &fragShaderSource, NULL);
-	glCompileShader(fragShader);
-
-	//confirm the shader compilation did not burn to the ground
-	shaderSuccess(vertexShader, "Vertex Shader");
-	shaderSuccess(fragShader, "Fragment Shader");
-
-	//link shaders together in a shader program and create the program
-	unsigned int shaderProgram;
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragShader);
-	glLinkProgram(shaderProgram);
-	
-	//confirm successful linking
-	shaderProgramSuccess(shaderProgram, "Vertex and Fragment Link");
-	
-	//delete shaders after they've been linked
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragShader);
+	std::vector<drawTriangle*>* triangles = new std::vector<drawTriangle*>;//stores all my triangles
 
 	while (!glfwWindowShouldClose(window)) { //rendering loop
-		processInput(window); //listens for key/mouse input
-		glClear(GL_COLOR_BUFFER_BIT);
-		//for all rendering use this shader program
-		glUseProgram(shaderProgram);
-		for (int i = 0; i < 2; i++) {
-			glBindVertexArray(VAO[i]);
-			glDrawArrays(GL_TRIANGLES, 0, 3);
+		triangles = processInput(window, read, triangles); //listens for key/mouse input
+		if (processSpaceKey(window)) {
+			drawTriangle* tempT = new drawTriangle();
+			triangles->push_back(tempT);
 		}
+		
+		glClear(GL_COLOR_BUFFER_BIT);
+		//TODO change how this works so it is more friendly to the draw triangles class
+		if (!triangles->empty()) {
+			for (int i = 0; i < triangles->size(); i++) {
+				triangles->at(i)->renderTriangle();
+			}
+		}
+	
+		glfwSwapInterval(1); //this limits rendering to the refresh rate of the monitor
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+	
+	//delete triangles
+	for (int i = 0; i < triangles->size(); i++) {
+		delete triangles->at(i);
+	}
+	delete read;
 
 	glfwTerminate(); //safely deletes all objects and stuff with glfw
-	glDeleteVertexArrays(2, VAO);
-	glDeleteBuffers(2, VBO);
 
 	return 0;
 }

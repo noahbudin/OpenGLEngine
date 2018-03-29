@@ -124,14 +124,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="drawTriangle.cpp" />
     <ClCompile Include="Libraries\glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ReadWriteLevelInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="drawTriangle.h" />
     <ClInclude Include="Include\glad\glad.h" />
     <ClInclude Include="Include\GLFW\glfw3.h" />
     <ClInclude Include="Include\KHR\khrplatform.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="ReadLevelInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Libraries\glfw3.lib" />
