@@ -4,11 +4,20 @@
 /CONSTANTS
 /TODO: Clean up constants list, abstract into objects more?
 **/
-float red = 0.835f;
-float green = 0.7f;
-float blue = 0.0f;
+//background colors
+float clearRed = 0.835f;
+float clearGreen = 0.7f;
+float clearBlue = 0.0f;
+//triangle colors
+float red = 0.01f;
+float green = 0.01f;
+float blue = 0.01f;
+float colors[3] = { red, green, blue };
+float colorTime = 0.0f;
+//window constants
 const int width = 800;
 const int height = 600;
+//space button bool
 char* previousState = "up";
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -36,28 +45,30 @@ std::vector<drawTriangle*>* processInput(GLFWwindow* window, ReadWriteLevelInfo*
 
 //checks for space key and places single random triangle on press
 bool processSpaceKey(GLFWwindow* window) {
-		int spaceKey = glfwGetKey(window, GLFW_KEY_SPACE);
-	
-		if (spaceKey == GLFW_RELEASE) {
-			previousState = "up";
-		}
-		if (spaceKey == GLFW_PRESS && previousState == "up") {
-			std::cout << "Space Key Pressed!" << std::endl;
-			previousState = "down";
-			return true;
-		}
-		else {
-			return false;
-		}
+	int spaceKey = glfwGetKey(window, GLFW_KEY_SPACE);
+
+	if (spaceKey == GLFW_RELEASE) {
+		previousState = "up";
+	}
+	if (spaceKey == GLFW_PRESS && previousState == "up") {
+		std::cout << "Space Key Pressed!" << std::endl;
+		previousState = "down";
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 //main
 int main() {
 	// generate random seed for rand() to use later
 	srand(static_cast <unsigned> (time(0))); 
-
+	
 	//initialize read/write object
 	ReadWriteLevelInfo* read = new ReadWriteLevelInfo();
+
+	ColorChanger* cg = new ColorChanger(red, green, blue);
 
 	glfwInit(); //intializes glfw 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); //window hint configures glfw options, 1st param is option, second is choice
@@ -82,7 +93,7 @@ int main() {
 	}
 
 	glViewport(0, 0, width, height);
-	glClearColor(red, green, blue, 0.0f); //put colors in seperate vars later
+	glClearColor(clearRed, clearGreen, clearBlue, 0.0f); //put colors in seperate vars later
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); //kinda like an event listener, this is for resizing window
 
 	//wireframe mode
@@ -94,10 +105,14 @@ int main() {
 
 	while (!glfwWindowShouldClose(window)) { //rendering loop
 		currShader.use();
-		float timeValue = glfwGetTime();
-		green = (sin(timeValue));
-		blue = (sin(timeValue) + timeValue);
-		red = (sin(timeValue));
+		//change colors
+		if (!triangles->empty()) {
+			red = cg->returnRed();
+			green = cg->returnGreen();
+			blue = cg->returnBlue();
+			cg->changeColors();
+		}
+
 		currShader.setFloat("ourColor", red, green, blue);
 		triangles = processInput(window, read, triangles); //listens for key/mouse input
 		if (processSpaceKey(window)) {
