@@ -3,9 +3,13 @@
 	int drawTriangle::triangleCount = 0;
 	
 	//constructors
-	drawTriangle::drawTriangle(std::array <float, 9> vertices, int arrSize) {
+	drawTriangle::drawTriangle(float width, float height, float positionX, float positionY, int arrSize) {
+		this->positionX = positionX;
+		this->positionY = positionY;
+		this->width = width;
+		this->height = height;
 		this->size = arrSize;
-		this->vertices = vertices;
+		this->vertices = calcVerts();
 		triangleCount++;
 		for (int i = 0; i < arrSize; i++) {
 			this->verts[i] = vertices[i];
@@ -60,6 +64,37 @@
 		for (int i = 0; i < this->size; i++) {
 			std::cout << "index: " << i << " vertex: " << this->verts[i] << std::endl;
 		}
+	}
+
+	std::array<float, 9> drawTriangle::calcVerts() {
+		std::array<float, 9> returnVerts;
+		returnVerts.fill(0.0f);
+		for (int i = 0; i < 9; i++) {
+			switch (i) {
+			//top vertice
+			case 0:
+				returnVerts.at(i) = this->positionX; //x
+				returnVerts.at(i + 1) = this->positionY + this->height / 2; //y
+				returnVerts.at(i + 2) = 0.0f; //z
+				break;
+			//left corner
+			case 3:
+				returnVerts.at(i) = this->positionX - this->width/2; //x
+				returnVerts.at(i + 1) = this->positionY - this->height / 2; //y
+				returnVerts.at(i + 2) = 0.0f; //z
+				break;
+			//right corner
+			case 6:
+				returnVerts.at(i) = this->positionX + this->width/2; //x
+				returnVerts.at(i + 1) = this->positionY - this->height / 2; //y
+				returnVerts.at(i + 2) = 0.0f; //z
+				break;
+			}
+		}
+		for (int i = 0; i < 9; i++) {
+			std::cout << i << " " << returnVerts.at(i) << std::endl;
+		}
+		return returnVerts;
 	}
 	
 	std::array<float, 9> drawTriangle::getRandVerts() {

@@ -14,7 +14,7 @@ class drawTriangle {
 		static const char* vertexShaderSource;
 		static const char* fragShaderSource;
 		int size;
-		drawTriangle(std::array<float, 9> vertices, int arrSize);
+		drawTriangle(float width, float height, float positionX, float positionY, int arrSize);
 		drawTriangle();
 		~drawTriangle();
 		void printVertices();
@@ -23,6 +23,10 @@ class drawTriangle {
 
 	private:
 		float verts[9];
+		float positionX;
+		float positionY;
+		float width;
+		float height;
 		unsigned int shaderProgram;
 		static int triangleCount;
 		void initTriangle();
@@ -30,4 +34,5 @@ class drawTriangle {
 		std::array<float, 9> getRandVerts();
 		void shaderSuccess(unsigned int shader, char* shaderType);
 		void shaderProgramSuccess(unsigned int program, char* programType);
+		std::array<float, 9> calcVerts();
 };

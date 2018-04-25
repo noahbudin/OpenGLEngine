@@ -20,3 +20,6 @@ void shaderSuccess(unsigned int shader, char* shaderType);
 void shaderProgramSuccess(unsigned int program, char* programType);
 drawTriangle newTriangle();
 float* getRandVerts();
+bool mouse_button_callback(GLFWwindow* window);
+double screenToOpengl(double returnCord);
+double screenToOpengl(double cord, char* axis);

@@ -21,8 +21,8 @@ drawRectangle::drawRectangle(float width, float height, float positionX, float p
 			bottomLeft[i - 9] = vertices->at(i);
 		}
 	}
-	this->topRightTriangle = new drawTriangle(topRight, 9);
-	this->bottomLeftTriangle = new drawTriangle(bottomLeft, 9);
+	this->topRightTriangle = new drawTriangle(this->width, this->height, this->position->at(0) + this->width/4, this->position->at(1) + this->height/4, 9);
+	this->bottomLeftTriangle = new drawTriangle(this->width, this->height,this->position->at(0) - this->width/4, this->position->at(1) - this->height/4, 9);
 }
 
 

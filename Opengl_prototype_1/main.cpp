@@ -19,6 +19,9 @@ const int width = 800;
 const int height = 600;
 //space button bool
 char* previousState = "up";
+char* drawMode = "t";
+double cursorX;
+double cursorY;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
@@ -74,6 +77,28 @@ bool processTwoKey(GLFWwindow* window) {
 	else {
 		return false;
 	}
+}
+bool mouse_button_callback(GLFWwindow* window) {
+	int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+	if(state == GLFW_PRESS) {
+		std::cout << "x: " << cursorX << " y: " << cursorY << std::endl;
+		std::cout << "openglX: " << screenToOpengl(cursorX, "x") << " openglY: " << screenToOpengl(cursorY, "y") << std::endl;
+		return true;
+	}
+	return false;
+}
+
+//converts screen cords to opengl cords
+double screenToOpengl(double cord, char* axis) {
+	double returnCord;
+	if (axis == "x") {
+		returnCord = ((cord - (width / 2)) / (width / 2));
+	}
+	else {
+		returnCord = (((height / 2) - cord) / (height / 2));
+	}
+	std::cout << "returnCord: " << returnCord << std::endl;
+	return returnCord;
 }
 
 //main
@@ -136,13 +161,23 @@ int main() {
 
 		//checks for 1 or 2 key press to add rectangles or triangles
 		//also may want to create an "object" parent class and have rectangles and triangles inherit, then you can have array of objects instead of separate arrays
+		if (mouse_button_callback(window)){
+			if (drawMode == "t") {
+				drawTriangle* tempT = new drawTriangle(0.2, 0.2, screenToOpengl(cursorX, "x"), screenToOpengl(cursorY, "y"), 9);
+				triangles->push_back(tempT);
+			}
+			else if (drawMode == "r") {
+				drawRectangle* tempRec = new drawRectangle(0.2, 0.2, screenToOpengl(cursorX, "x"), screenToOpengl(cursorY, "y"));
+				rectangles->push_back(tempRec);
+			}
+		}
+		
+		//change draw mode
 		if (processOneKey(window)) {
-			drawTriangle* tempT = new drawTriangle();
-			triangles->push_back(tempT);
+			drawMode = "t";
 		}
 		if (processTwoKey(window)) {
-			drawRectangle* tempRec = new drawRectangle(1.0, 1.0, 0, 0);
-			rectangles->push_back(tempRec);
+			drawMode = "r";
 		}
 		
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -158,10 +193,11 @@ int main() {
 				rectangles->at(i)->renderRectangle();
 			}
 		}
-
+		mouse_button_callback(window);
+		glfwGetCursorPos(window, &cursorX, &cursorY); //inefficient
 		glfwSwapInterval(1); //this limits rendering to the refresh rate of the monitor
 		glfwSwapBuffers(window);
-		glfwPollEvents();
+		glfwWaitEvents();
 	}
 	
 	//delete triangles
