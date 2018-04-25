@@ -4,18 +4,21 @@
 
 class drawRectangle {
 	public:
-		drawRectangle(float width, float height, float position);
+		drawRectangle(float width, float height, float positionX, float positionY);
 		~drawRectangle();
 		float getWidth();
 		float getHeight();
 		float getArea();
-		float getPos();
+		void renderRectangle();
+		std::array<float, 2>* getPos();
 
 	private:
 		//something
 		float height;
 		float width;
-		float position;
-		std::array<float, 18> calcVerts(float width, float height, float position);
-		std::array<float, 18> vertices;
+		std::array<float, 2>* position;
+		drawTriangle* topRightTriangle;
+		drawTriangle* bottomLeftTriangle;
+		std::array<float, 18>* calcVerts();
+		std::array<float, 18>* vertices;
 };

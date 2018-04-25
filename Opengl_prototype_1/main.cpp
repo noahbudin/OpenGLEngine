@@ -9,9 +9,9 @@ float clearRed = 0.835f;
 float clearGreen = 0.7f;
 float clearBlue = 0.0f;
 //triangle colors
-float red = 0.01f;
-float green = 0.01f;
-float blue = 0.01f;
+float red = 0.00f;
+float green = 0.00f;
+float blue = 0.00f;
 float colors[3] = { red, green, blue };
 float colorTime = 0.0f;
 //window constants
@@ -44,13 +44,29 @@ std::vector<drawTriangle*>* processInput(GLFWwindow* window, ReadWriteLevelInfo*
 }
 
 //checks for space key and places single random triangle on press
-bool processSpaceKey(GLFWwindow* window) {
-	int spaceKey = glfwGetKey(window, GLFW_KEY_SPACE);
+bool processOneKey(GLFWwindow* window) {
+	int oneKey = glfwGetKey(window, GLFW_KEY_1);
 
-	if (spaceKey == GLFW_RELEASE) {
+	if (oneKey == GLFW_RELEASE) {
 		previousState = "up";
 	}
-	if (spaceKey == GLFW_PRESS && previousState == "up") {
+	if (oneKey == GLFW_PRESS && previousState == "up") {
+		std::cout << "Space Key Pressed!" << std::endl;
+		previousState = "down";
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool processTwoKey(GLFWwindow* window) {
+	int twoKey = glfwGetKey(window, GLFW_KEY_2);
+
+	if (twoKey == GLFW_RELEASE) {
+		previousState = "up";
+	}
+	if (twoKey == GLFW_PRESS && previousState == "up") {
 		std::cout << "Space Key Pressed!" << std::endl;
 		previousState = "down";
 		return true;
@@ -98,15 +114,17 @@ int main() {
 
 	//wireframe mode
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	
 	Shader currShader = Shader("Shaders/triangleVert.vert", "Shaders/triangleFrag.frag");
 	currShader.use();
 
 	std::vector<drawTriangle*>* triangles = new std::vector<drawTriangle*>;//stores all my triangles
+	std::vector<drawRectangle*>* rectangles = new std::vector<drawRectangle*>;//stores all my triangles
 
 	while (!glfwWindowShouldClose(window)) { //rendering loop
 		currShader.use();
 		//change colors
-		if (!triangles->empty()) {
+		if (!triangles->empty() || !rectangles->empty()) {
 			red = cg->returnRed();
 			green = cg->returnGreen();
 			blue = cg->returnBlue();
@@ -115,9 +133,16 @@ int main() {
 
 		currShader.setFloat("ourColor", red, green, blue);
 		triangles = processInput(window, read, triangles); //listens for key/mouse input
-		if (processSpaceKey(window)) {
+
+		//checks for 1 or 2 key press to add rectangles or triangles
+		//also may want to create an "object" parent class and have rectangles and triangles inherit, then you can have array of objects instead of separate arrays
+		if (processOneKey(window)) {
 			drawTriangle* tempT = new drawTriangle();
 			triangles->push_back(tempT);
+		}
+		if (processTwoKey(window)) {
+			drawRectangle* tempRec = new drawRectangle(1.0, 1.0, 0, 0);
+			rectangles->push_back(tempRec);
 		}
 		
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -128,6 +153,12 @@ int main() {
 			}
 		}
 	
+		if (!rectangles->empty()) {
+			for (int i = 0; i < rectangles->size(); i++) {
+				rectangles->at(i)->renderRectangle();
+			}
+		}
+
 		glfwSwapInterval(1); //this limits rendering to the refresh rate of the monitor
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -136,6 +167,10 @@ int main() {
 	//delete triangles
 	for (int i = 0; i < triangles->size(); i++) {
 		delete triangles->at(i);
+	}
+
+	for (int i = 0; i < rectangles->size(); i++) {
+		delete rectangles->at(i);
 	}
 	delete read;
 

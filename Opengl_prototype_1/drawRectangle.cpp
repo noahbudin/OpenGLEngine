@@ -1,81 +1,79 @@
 #include "drawRectangle.h"
 
-drawRectangle::drawRectangle(float width, float height, float position) {
+drawRectangle::drawRectangle(float width, float height, float positionX, float positionY) {
 	this->width = width;
-	this->getHeight = height;
-	this->position = position;
-	this->vertices = this->calcVerts(this->width, this->height, this->position);
+	this->height = height;
+	this->position = new std::array<float, 2>;
+	this->position->at(0) = positionX;
+	this->position->at(1) = positionY;
+	this->vertices = this->calcVerts();
+
 	//drawTriangle twice passing array size 9 of vertices based off of width, height, center calculations
-	//also may be drawing corner vertices twice due to drawTriangle being called twice
+	//also may be drawing corner vertices twice due to drawTriangle being called twice (optimize late)
+
 	std::array<float, 9> topRight;
 	std::array<float, 9> bottomLeft;
 	for (int i = 0; i < 18; i++) {
-		if (i <= 9) {
-			topRight[i] = vertices[i];
+		if (i < 9) {
+			topRight[i] = vertices->at(i);
 		}
 		else {
-			bottomLeft[i] = vertices[i];
+			bottomLeft[i - 9] = vertices->at(i);
 		}
 	}
-	drawTriangle topRightTriangle = new drawTriangle(topRight); //array size??
+	this->topRightTriangle = new drawTriangle(topRight, 9);
+	this->bottomLeftTriangle = new drawTriangle(bottomLeft, 9);
 }
 
 
 drawRectangle::~drawRectangle() {
+	delete this->vertices;
+	delete this->topRightTriangle;
+	delete this->bottomLeftTriangle;
+	delete this->position;
 	return;
 }
 
-std::array<float, 18> drawRectangle::calcVerts(float width, float height, float positiion) {
-	//calc verts
-	//lets say pos at origin(0, 0) and verts at 110   -1-10   -110   1-10
-	//height and width are both 1
-	//origin is at center of hypotenuse
-	//draw a triangle where 3 verts are 10, 11, -11 (top right triangle)
-	//draw a second triangle where 3 verts are  1-1,-1-1, -10
+std::array<float, 18>* drawRectangle::calcVerts() {
+	std::array<float, 18>* returnVerts = new std::array<float, 18>;
+	returnVerts->fill(0.0f);
 
-	std::array<float, 18> returnVerts;
-
-	//top right
-	for (int i = 0; i < 9; i++) {
+	for (int i = 0; i < 18; i++) {
 		switch (i) {
-		case 0:
-			returnVerts[i] = width;
-			returnVerts[i + 1] = width - height;
-			returnVerts[i + 2] = 0.0f;
+		//top right triangle
+		case 0://bottom right vertex
+			returnVerts->at(i) = this->position->at(0) + this->width/2; //x
+			returnVerts->at(i + 1) = this->position->at(1) - this->height/2; //y
 			break;
-		case 3:
-			returnVerts[i] = width;
-			returnVerts[i + 1] = height;
-			returnVerts[i + 2] = 0.0f;
+		case 3://top right vertex
+			returnVerts->at(i) = this->position->at(0) + this->width/2;
+			returnVerts->at(i + 1) = this->position->at(1) + this->height/2;
 			break;
-		case 6:
-			returnVerts[i] = -width;
-			returnVerts[i + 1] = height;
-			returnVerts[i + 2] = 0.0f;
+		case 6://top left vertex
+			returnVerts->at(i) = this->position->at(0) - this->width/2;
+			returnVerts->at(i + 1) = this->position->at(1) + this->height/2;
 			break;
-		}
-	}
-	//bottom left
-	for (int i = 0; i < 9; i++) {
-		switch (i){
-			case 0:
-				returnVerts[i] = width;
-				returnVerts[i + 1] = -height;
-				returnVerts[i + 2] = 0.0f;
-				break;
-			case 3:
-				returnVerts[i] = -width;
-				returnVerts[i + 1] = -height;
-				returnVerts[i + 2] = 0.0f;
-				break;
-			case 6:
-				returnVerts[i] = -width;
-				returnVerts[i + 1] = height - width;
-				returnVerts[i + 2] = 0.0f;
-				break;
+		//bottom left triangle
+		case 9://top left vertex
+			returnVerts->at(i) = this->position->at(0) - this->width/2; //x
+			returnVerts->at(i + 1) = this->position->at(1) + this->height/2; //y
+			break;
+		case 12://bottom left vertex
+			returnVerts->at(i) = this->position->at(0) - this->width/2;
+			returnVerts->at(i + 1) = this->position->at(1) - this->height/2;
+			break;
+		case 15: //bottom right vertex
+			returnVerts->at(i) = this->position->at(0) + this->width/2;
+			returnVerts->at(i + 1) = this->position->at(1) - this->height/2;
+			break;
 		}
 	}
 	return returnVerts;
+}
+
+void drawRectangle::renderRectangle() {
+	this->topRightTriangle->renderTriangle();
+	this->bottomLeftTriangle->renderTriangle();
 }
 
 float drawRectangle::getWidth() {
@@ -86,7 +84,7 @@ float drawRectangle::getHeight() {
 	return this->height;
 }
 
-float drawRectangle::getPos() {
+std::array<float, 2>* drawRectangle::getPos() {
 	return this->position;
 }
 

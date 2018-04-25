@@ -15,6 +15,9 @@ private:
 	float red;
 	float green;
 	float blue;
+	float delta;
+	float prev;
+	float current;
 	int iterator;
 	std::string currColor;
 	float x;
