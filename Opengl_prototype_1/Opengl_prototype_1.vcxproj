@@ -125,6 +125,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ColorChanger.cpp" />
+    <ClCompile Include="drawRectangle.cpp" />
     <ClCompile Include="drawTriangle.cpp" />
     <ClCompile Include="Libraries\glad.c" />
     <ClCompile Include="main.cpp" />
@@ -132,6 +133,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ColorChanger.h" />
+    <ClInclude Include="drawRectangle.h" />
     <ClInclude Include="drawTriangle.h" />
     <ClInclude Include="Include\glad\glad.h" />
     <ClInclude Include="Include\GLFW\glfw3.h" />
