@@ -30,8 +30,17 @@
     <ClCompile Include="ColorChanger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="drawRectangle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\glad\glad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GLFW\glfw3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Include\KHR\khrplatform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -50,18 +59,15 @@
     <ClInclude Include="ColorChanger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\glad\glad.h">
+    <ClInclude Include="drawRectangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\GLFW\glfw3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="Libraries\glfw3.lib" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\triangleFrag.frag" />
     <None Include="Shaders\triangleVert.vert" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="Libraries\glfw3.lib" />
   </ItemGroup>
 </Project>
