@@ -3,10 +3,13 @@
 #include <GLFW/glfw3.h>
 #include "drawTriangle.h"
 #include "ReadLevelInfo.h"
+#include "ColorChanger.h"
+#include "Shaders/Shader.h"
 #include <vector>
 #include <cstdlib>
 #include <ctime>
 #include <array>
+#include <cmath>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 std::vector<drawTriangle*>* processInput(GLFWwindow* window, ReadWriteLevelInfo* readWrite, std::vector<drawTriangle>* triangles);

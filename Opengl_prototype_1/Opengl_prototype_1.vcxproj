@@ -76,6 +76,15 @@
     <IncludePath>C:\Users\Noah\Source\Repos\OpenGL_Tutorial_Runthrough\Opengl_prototype_1\Include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\Noah\Source\Repos\OpenGL_Tutorial_Runthrough\Opengl_prototype_1\Libraries;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LibraryPath>Libraries;$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);Include;$(IncludePath)</IncludePath>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>C:\Users\Noah\Source\Repos\OpenGL_Tutorial_Runthrough\Opengl_prototype_1\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Noah\Source\Repos\OpenGL_Tutorial_Runthrough\Opengl_prototype_1\Libraries;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -108,6 +117,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -121,21 +131,29 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ColorChanger.cpp" />
     <ClCompile Include="drawTriangle.cpp" />
     <ClCompile Include="Libraries\glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ReadWriteLevelInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ColorChanger.h" />
     <ClInclude Include="drawTriangle.h" />
     <ClInclude Include="Include\glad\glad.h" />
     <ClInclude Include="Include\GLFW\glfw3.h" />
     <ClInclude Include="Include\KHR\khrplatform.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="ReadLevelInfo.h" />
+    <ClInclude Include="Shaders\Shader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\triangleFrag.frag" />
+    <None Include="Shaders\triangleVert.vert" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Libraries\glfw3.lib" />
