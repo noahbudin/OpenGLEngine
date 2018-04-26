@@ -18,6 +18,7 @@
 		this->countTriangle();
 	}
 
+	//depreciated
 	drawTriangle::drawTriangle() {
 		this->size = 9;
 		this->vertices = this->getRandVerts();
@@ -29,10 +30,21 @@
 		this->countTriangle();
 	}
 
+	//for drawRectangles (as drawRec calcs its own vertices)
+	drawTriangle::drawTriangle(std::array<float, 9> vertices) {
+		this->vertices = vertices;
+		triangleCount++;
+		for (int i = 0; i < 9; i++) {
+			this->verts[i] = vertices[i];
+		}	
+		this->initTriangle();
+		this->countTriangle();
+	}
+
 	drawTriangle::~drawTriangle() {
 			glDeleteVertexArrays(1, &this->VAO);
 			glDeleteBuffers(1, &this->VBO);
-			//delete[] this->verts;
+			delete this->verts;
 	}
 	
 	//TODO Create only one instance of this object to handle all the triangles, send all triangles in VAO at once to buffer

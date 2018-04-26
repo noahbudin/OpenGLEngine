@@ -28,10 +28,11 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 //checks for escape key, will close window
-std::vector<drawTriangle*>* processInput(GLFWwindow* window, ReadWriteLevelInfo* readWrite, std::vector<drawTriangle*>* triangles) {
+std::vector<drawTriangle*>* processInput(GLFWwindow* window, ReadWriteLevelInfo* readWrite, std::vector<drawTriangle*>* triangles, std::vector<drawRectangle*>* rectangles) {
 	int escapeKey = glfwGetKey(window, GLFW_KEY_ESCAPE);
 	int rKey = glfwGetKey(window, GLFW_KEY_R);
 	int wKey = glfwGetKey(window, GLFW_KEY_W);
+	int cKey = glfwGetKey(window, GLFW_KEY_C);
 	if (escapeKey == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
 	}
@@ -42,6 +43,9 @@ std::vector<drawTriangle*>* processInput(GLFWwindow* window, ReadWriteLevelInfo*
 		//std::vector<drawTriangle*>* temp = new std::vector<drawTriangle*>;
 		triangles = readWrite->readFile(triangles);
 		std::cout << "DONE" << std::endl;
+	}
+	if (cKey == GLFW_PRESS) {
+		clearScreen(triangles, rectangles);
 	}
 	return triangles;
 }
@@ -101,6 +105,16 @@ double screenToOpengl(double cord, char* axis) {
 	return returnCord;
 }
 
+void clearScreen(std::vector<drawTriangle*>* triangles, std::vector<drawRectangle*>* rectangles) {
+	for (int i = 0; i < triangles->size(); i++) {
+		triangles->pop_back();
+	}
+
+	for (int i = 0; i < rectangles->size(); i++) {
+		rectangles->pop_back();
+	}
+}
+
 //main
 int main() {
 	// generate random seed for rand() to use later
@@ -157,7 +171,7 @@ int main() {
 		}
 
 		currShader.setFloat("ourColor", red, green, blue);
-		triangles = processInput(window, read, triangles); //listens for key/mouse input
+		triangles = processInput(window, read, triangles, rectangles); //listens for key/mouse input
 
 		//checks for 1 or 2 key press to add rectangles or triangles
 		//also may want to create an "object" parent class and have rectangles and triangles inherit, then you can have array of objects instead of separate arrays
@@ -197,18 +211,19 @@ int main() {
 		glfwGetCursorPos(window, &cursorX, &cursorY); //inefficient
 		glfwSwapInterval(1); //this limits rendering to the refresh rate of the monitor
 		glfwSwapBuffers(window);
-		glfwWaitEvents();
+		glfwPollEvents();
 	}
 	
 	//delete triangles
 	for (int i = 0; i < triangles->size(); i++) {
-		delete triangles->at(i);
+		triangles->pop_back();
 	}
 
 	for (int i = 0; i < rectangles->size(); i++) {
-		delete rectangles->at(i);
+		rectangles->pop_back();
 	}
 	delete read;
+	delete cg;
 
 	glfwTerminate(); //safely deletes all objects and stuff with glfw
 

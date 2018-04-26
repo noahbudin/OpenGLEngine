@@ -16,6 +16,7 @@ class drawTriangle {
 		int size;
 		drawTriangle(float width, float height, float positionX, float positionY, int arrSize);
 		drawTriangle();
+		drawTriangle(std::array<float, 9> vertices);
 		~drawTriangle();
 		void printVertices();
 		int countTriangle();
