@@ -106,13 +106,8 @@ double screenToOpengl(double cord, char* axis) {
 }
 
 void clearScreen(std::vector<drawTriangle*>* triangles, std::vector<drawRectangle*>* rectangles) {
-	for (int i = 0; i < triangles->size(); i++) {
-		triangles->pop_back();
-	}
-
-	for (int i = 0; i < rectangles->size(); i++) {
-		rectangles->pop_back();
-	}
+		triangles->clear();
+		rectangles->clear();
 }
 
 //main
@@ -215,13 +210,9 @@ int main() {
 	}
 	
 	//delete triangles
-	for (int i = 0; i < triangles->size(); i++) {
-		triangles->pop_back();
-	}
+	triangles->clear();
+	rectangles->clear();
 
-	for (int i = 0; i < rectangles->size(); i++) {
-		rectangles->pop_back();
-	}
 	delete read;
 	delete cg;
 
