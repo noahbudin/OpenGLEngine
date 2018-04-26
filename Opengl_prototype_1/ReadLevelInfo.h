@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include "drawTriangle.h"
+#include "drawRectangle.h"
 
 class ReadWriteLevelInfo{
 	private:
@@ -18,4 +19,5 @@ class ReadWriteLevelInfo{
 		void changeFilename();
 		void writeFile(std::vector<drawTriangle*>* triangles);
 		std::vector<drawTriangle*>* readFile(std::vector<drawTriangle*>* triangles);
+		std::vector<drawTriangle*>* readRec(std::vector<drawRectangle*>* rectangles);
 };

@@ -100,6 +100,10 @@ std::vector<drawTriangle*>* ReadWriteLevelInfo::readFile(std::vector<drawTriangl
 	return triangleList;
 }
 
+std::vector<drawTriangle*>* ReadWriteLevelInfo::readRec(std::vector<drawRectangle*>* rectangles) {
+	return NULL;
+}
+
 void ReadWriteLevelInfo::writeFile(std::vector<drawTriangle*>* triangles) {
 	std::cout << "Write File" << std::endl;
 	this->changeFilename();
