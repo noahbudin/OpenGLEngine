@@ -38,6 +38,7 @@ void ReadWriteLevelInfo::changeFilename() {
 	this->filename = input;
 }
 
+//read file reading by char? ends verts are not right...
 std::vector<drawTriangle*>* ReadWriteLevelInfo::readFile(std::vector<drawTriangle*>* triangles) {
 	std::cout << "Read File" << std::endl;
 	std::vector<drawTriangle*>* triangleList = new std::vector<drawTriangle*>;
@@ -74,6 +75,7 @@ std::vector<drawTriangle*>* ReadWriteLevelInfo::readFile(std::vector<drawTriangl
 			std::vector<float> newTVerts;
 			std::array<float, 9>* passedVerts = new std::array<float, 9>();
 
+			//reading character codes, need to account for multiple nums and negatives ect. (sep by commas)
 			for (int i = 1; i < x.size() + 1; i++) {
 				if (i % 2 == 0) {
 					newTVerts.push_back(x[i]);
@@ -82,9 +84,15 @@ std::vector<drawTriangle*>* ReadWriteLevelInfo::readFile(std::vector<drawTriangl
 			for (int i = 0; i < 9; i++) {
 				passedVerts->at(i) = newTVerts.at(i);
 			}
+
+			//print verts of each triangle
+			std::cout << "{";
 			for (int i = 0; i < 9; i++) {
-				std::cout << passedVerts->at(i) << std::endl;
+				std::cout << passedVerts->at(i);
+				std::cout << ",";
 			}
+			std::cout << "}" << std::endl;
+			//end of print verts
 			drawTriangle* newT = new drawTriangle(passedVerts);
 			triangleList->push_back(newT);
 		}

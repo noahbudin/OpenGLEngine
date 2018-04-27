@@ -42,7 +42,7 @@
 	drawTriangle::~drawTriangle() {
 			glDeleteVertexArrays(1, &this->VAO);
 			glDeleteBuffers(1, &this->VBO);
-			delete this->verts;
+			//delete[] this->verts;
 	}
 	
 	//TODO Create only one instance of this object to handle all the triangles, send all triangles in VAO at once to buffer
