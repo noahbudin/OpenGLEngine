@@ -11,18 +11,22 @@ drawRectangle::drawRectangle(float width, float height, float positionX, float p
 	//drawTriangle twice passing array size 9 of vertices based off of width, height, center calculations
 	//also may be drawing corner vertices twice due to drawTriangle being called twice (optimize late)
 
-	std::array<float, 9> topRight;
-	std::array<float, 9> bottomLeft;
+	std::array<float, 9>* topRight = new std::array<float, 9>();
+	std::array<float, 9>* bottomLeft = new std::array<float, 9>();
 	for (int i = 0; i < 18; i++) {
 		if (i < 9) {
-			topRight[i] = vertices->at(i);
+			topRight->at(i) = this->vertices->at(i);
 		}
 		else {
-			bottomLeft[i - 9] = vertices->at(i);
+			bottomLeft->at(i - 9) = this->vertices->at(i);
 		}
 	}
 	this->topRightTriangle = new drawTriangle(topRight);
 	this->bottomLeftTriangle = new drawTriangle(bottomLeft);
+	this->recTriangles = new std::vector<drawTriangle*>();
+	
+	recTriangles->push_back(this->topRightTriangle);
+	recTriangles->push_back(this->bottomLeftTriangle);
 }
 
 
@@ -90,4 +94,9 @@ std::array<float, 2>* drawRectangle::getPos() {
 
 float drawRectangle::getArea() {
 	return this->height * this->width;
+}
+
+std::vector<drawTriangle*>* drawRectangle::getTriangles() {
+	return this->recTriangles;
+
 }

@@ -5,9 +5,9 @@
 /TODO: Clean up constants list, abstract into objects more?
 **/
 //background colors
-float clearRed = 0.835f;
-float clearGreen = 0.7f;
-float clearBlue = 0.0f;
+float clearRed = 1.0f;
+float clearGreen = 0.0f;
+float clearBlue = 1.0f;
 //triangle colors
 float red = 0.00f;
 float green = 0.00f;
@@ -37,7 +37,7 @@ std::vector<drawTriangle*>* processInput(GLFWwindow* window, ReadWriteLevelInfo*
 		glfwSetWindowShouldClose(window, true);
 	}
 	if (wKey == GLFW_PRESS) {
-		readWrite->writeFile(triangles);
+		readWrite->writeFile(triangles, rectangles);
 	}
 	if (rKey == GLFW_PRESS) {
 		//std::vector<drawTriangle*>* temp = new std::vector<drawTriangle*>;
@@ -74,7 +74,7 @@ bool processTwoKey(GLFWwindow* window) {
 		previousState = "up";
 	}
 	if (twoKey == GLFW_PRESS && previousState == "up") {
-		std::cout << "Space Key Pressed!" << std::endl;
+		std::cout << "Two Pressed!" << std::endl;
 		previousState = "down";
 		return true;
 	}
@@ -84,12 +84,17 @@ bool processTwoKey(GLFWwindow* window) {
 }
 bool mouse_button_callback(GLFWwindow* window) {
 	int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
-	if(state == GLFW_PRESS) {
-		std::cout << "x: " << cursorX << " y: " << cursorY << std::endl;
-		std::cout << "openglX: " << screenToOpengl(cursorX, "x") << " openglY: " << screenToOpengl(cursorY, "y") << std::endl;
+	if (state == GLFW_RELEASE) {
+		previousState = "up";
+	}
+	if (state == GLFW_PRESS && previousState == "up") {
+		std::cout << "Two Pressed!" << std::endl;
+		previousState = "down";
 		return true;
 	}
-	return false;
+	else {
+		return false;
+	}
 }
 
 //converts screen cords to opengl cords

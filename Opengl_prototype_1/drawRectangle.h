@@ -1,6 +1,7 @@
 #pragma once
 #include "drawTriangle.h"
 #include <array>
+#include <vector>
 
 class drawRectangle {
 	public:
@@ -9,6 +10,7 @@ class drawRectangle {
 		float getWidth();
 		float getHeight();
 		float getArea();
+		std::vector<drawTriangle*>* getTriangles();
 		void renderRectangle();
 		std::array<float, 2>* getPos();
 
@@ -21,4 +23,5 @@ class drawRectangle {
 		drawTriangle* bottomLeftTriangle;
 		std::array<float, 18>* calcVerts();
 		std::array<float, 18>* vertices;
+		std::vector<drawTriangle*>* recTriangles;
 };

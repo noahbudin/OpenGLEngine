@@ -7,7 +7,7 @@ ReadWriteLevelInfo::ReadWriteLevelInfo() {
 
 std::string ReadWriteLevelInfo::validateInput() {
 	bool validInput = false;
-	std::string invalidChars = "0123456789!@#$%^&*()+-=<>?,./;':\"[] {}\\\n";
+	std::string invalidChars = "!@#$%^&*()+=<>?,./;':\"[] {}\\\n";
 	std::string userInput;
 
 	while (validInput == false) {
@@ -69,21 +69,23 @@ std::vector<drawTriangle*>* ReadWriteLevelInfo::readFile(std::vector<drawTriangl
 			triangles = NULL;
 		}
 
+		//read data and construct triangle
 		while (std::getline(inFile, x)) {
 			std::vector<float> newTVerts;
-			float passedVerts[9];
+			std::array<float, 9>* passedVerts = new std::array<float, 9>();
+
 			for (int i = 1; i < x.size() + 1; i++) {
 				if (i % 2 == 0) {
 					newTVerts.push_back(x[i]);
 				}
 			}
 			for (int i = 0; i < 9; i++) {
-				passedVerts[i] = newTVerts.at(i);
+				passedVerts->at(i) = newTVerts.at(i);
 			}
 			for (int i = 0; i < 9; i++) {
-				std::cout << passedVerts[i] << std::endl;
+				std::cout << passedVerts->at(i) << std::endl;
 			}
-			drawTriangle* newT = new drawTriangle();
+			drawTriangle* newT = new drawTriangle(passedVerts);
 			triangleList->push_back(newT);
 		}
 		inFile.close();
@@ -100,11 +102,7 @@ std::vector<drawTriangle*>* ReadWriteLevelInfo::readFile(std::vector<drawTriangl
 	return triangleList;
 }
 
-std::vector<drawTriangle*>* ReadWriteLevelInfo::readRec(std::vector<drawRectangle*>* rectangles) {
-	return NULL;
-}
-
-void ReadWriteLevelInfo::writeFile(std::vector<drawTriangle*>* triangles) {
+void ReadWriteLevelInfo::writeFile(std::vector<drawTriangle*>* triangles, std::vector<drawRectangle*>* rectangles) {
 	std::cout << "Write File" << std::endl;
 	this->changeFilename();
 	if (this->filename == "cancel") {
@@ -118,13 +116,30 @@ void ReadWriteLevelInfo::writeFile(std::vector<drawTriangle*>* triangles) {
 		for (int z = 0; z < 9; z++) {
 			//write to file index i
 			if (z < 9 - 1) {
-				ofstr << triangles->at(i)->vertices.at(z) << ",";
+				ofstr << triangles->at(i)->vertices->at(z) << ",";
 			}
 			else {
-				ofstr << triangles->at(i)->vertices.at(z);
+				ofstr << triangles->at(i)->vertices->at(z);
 			}
 		}
 		ofstr << "}\n";
+	}
+
+	for (int i = 0; i < rectangles->size(); i++) {
+		std::vector<drawTriangle*>* trianglesFromRec = rectangles->at(i)->getTriangles();
+		for (int r = 0; r < 2; r++) {
+			ofstr << "{";
+			for (int z = 0; z < 9; z++) {
+				//write to file index i
+				if (z < 9 - 1) {
+					ofstr << trianglesFromRec->at(r)->vertices->at(z) << ",";
+				}
+				else {
+					ofstr << trianglesFromRec->at(r)->vertices->at(z);
+				}
+			}
+			ofstr << "}\n";
+		}
 	}
 	ofstr.close();
 	std::cout << "Success!" << std::endl;

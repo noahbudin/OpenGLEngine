@@ -2,7 +2,7 @@
 
 	int drawTriangle::triangleCount = 0;
 	
-	//constructors
+	//constructors read triangles needs to use this somehow
 	drawTriangle::drawTriangle(float width, float height, float positionX, float positionY, int arrSize) {
 		this->positionX = positionX;
 		this->positionY = positionY;
@@ -12,10 +12,9 @@
 		this->vertices = calcVerts();
 		triangleCount++;
 		for (int i = 0; i < arrSize; i++) {
-			this->verts[i] = vertices[i];
+			this->verts[i] = vertices->at(i);
 		}	
 		this->initTriangle();
-		this->countTriangle();
 	}
 
 	//depreciated
@@ -24,21 +23,20 @@
 		this->vertices = this->getRandVerts();
 		triangleCount++;
 		for (int i = 0; i < 9; i++) {
-			this->verts[i] = vertices[i];
+			this->verts[i] = vertices->at(i);
 		}
 		this->initTriangle();
-		this->countTriangle();
 	}
 
+	//currently read is passing a local std array to the vertice pointer, local var gets deleted and the world breaks
 	//for drawRectangles (as drawRec calcs its own vertices)
-	drawTriangle::drawTriangle(std::array<float, 9> vertices) {
+	drawTriangle::drawTriangle(std::array<float, 9>* vertices) {
 		this->vertices = vertices;
 		triangleCount++;
 		for (int i = 0; i < 9; i++) {
-			this->verts[i] = vertices[i];
+			this->verts[i] = vertices->at(i);
 		}	
 		this->initTriangle();
-		this->countTriangle();
 	}
 
 	drawTriangle::~drawTriangle() {
@@ -78,39 +76,36 @@
 		}
 	}
 
-	std::array<float, 9> drawTriangle::calcVerts() {
-		std::array<float, 9> returnVerts;
-		returnVerts.fill(0.0f);
+	std::array<float, 9>* drawTriangle::calcVerts() {
+		std::array<float, 9>* returnVerts = new std::array<float, 9>();
+		returnVerts->fill(0.0f);
 		for (int i = 0; i < 9; i++) {
 			switch (i) {
 			//top vertice
 			case 0:
-				returnVerts.at(i) = this->positionX; //x
-				returnVerts.at(i + 1) = this->positionY + this->height / 2; //y
-				returnVerts.at(i + 2) = 0.0f; //z
+				returnVerts->at(i) = this->positionX; //x
+				returnVerts->at(i + 1) = this->positionY + this->height / 2; //y
+				returnVerts->at(i + 2) = 0.0f; //z
 				break;
 			//left corner
 			case 3:
-				returnVerts.at(i) = this->positionX - this->width/2; //x
-				returnVerts.at(i + 1) = this->positionY - this->height / 2; //y
-				returnVerts.at(i + 2) = 0.0f; //z
+				returnVerts->at(i) = this->positionX - this->width/2; //x
+				returnVerts->at(i + 1) = this->positionY - this->height / 2; //y
+				returnVerts->at(i + 2) = 0.0f; //z
 				break;
 			//right corner
 			case 6:
-				returnVerts.at(i) = this->positionX + this->width/2; //x
-				returnVerts.at(i + 1) = this->positionY - this->height / 2; //y
-				returnVerts.at(i + 2) = 0.0f; //z
+				returnVerts->at(i) = this->positionX + this->width/2; //x
+				returnVerts->at(i + 1) = this->positionY - this->height / 2; //y
+				returnVerts->at(i + 2) = 0.0f; //z
 				break;
 			}
-		}
-		for (int i = 0; i < 9; i++) {
-			std::cout << i << " " << returnVerts.at(i) << std::endl;
 		}
 		return returnVerts;
 	}
 	
-	std::array<float, 9> drawTriangle::getRandVerts() {
-		std::array<float, 9> verts;
+	std::array<float, 9>* drawTriangle::getRandVerts() {
+		std::array<float, 9>* verts = new std::array<float, 9>();
 		float triangleSize = 1.0f;
 		
 		for (int i = 0; i < 9; i++) {
@@ -125,7 +120,7 @@
 				float posVert = random2 * triangleSize;
 				newVert = negVert + posVert;
 			}
-			verts[i] = newVert;
+			verts->at(i) = newVert;
 		}
 		return verts;
 	}

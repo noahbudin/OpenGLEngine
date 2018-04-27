@@ -7,7 +7,7 @@
 //class defs
 class drawTriangle {
 	public:
-		std::array<float, 9> vertices;
+		std::array<float, 9>* vertices;
 		unsigned int VBO;
 		unsigned int VAO;
 		unsigned int shader;
@@ -16,7 +16,7 @@ class drawTriangle {
 		int size;
 		drawTriangle(float width, float height, float positionX, float positionY, int arrSize);
 		drawTriangle();
-		drawTriangle(std::array<float, 9> vertices);
+		drawTriangle(std::array<float, 9>* vertices);
 		~drawTriangle();
 		void printVertices();
 		int countTriangle();
@@ -32,8 +32,8 @@ class drawTriangle {
 		static int triangleCount;
 		void initTriangle();
 		unsigned int createShaderProgram();
-		std::array<float, 9> getRandVerts();
+		std::array<float, 9>* getRandVerts();
 		void shaderSuccess(unsigned int shader, char* shaderType);
 		void shaderProgramSuccess(unsigned int program, char* programType);
-		std::array<float, 9> calcVerts();
+		std::array<float, 9>* calcVerts();
 };
