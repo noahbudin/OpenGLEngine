@@ -76,9 +76,14 @@ std::vector<drawTriangle*>* ReadWriteLevelInfo::readFile(std::vector<drawTriangl
 			std::array<float, 9>* passedVerts = new std::array<float, 9>();
 
 			//reading character codes, need to account for multiple nums and negatives ect. (sep by commas)
-			for (int i = 1; i < x.size() + 1; i++) {
-				if (i % 2 == 0) {
-					newTVerts.push_back(x[i]);
+			for (int i = 0; i < x.size(); i++) {
+				std::string temp = "";
+				while(x[i] != '{' && x[i] != ',' && x[i] != '}') {
+					temp += x[i];
+					i++;
+				}
+				if (temp != "") {
+					newTVerts.push_back(std::atof(temp.c_str()));
 				}
 			}
 			for (int i = 0; i < 9; i++) {
