@@ -63,7 +63,7 @@
 	
 	void drawTriangle::renderTriangle() {
 		//for all rendering use this shader program
-		glUseProgram(shaderProgram);
+		//glUseProgram(shaderProgram);
 
 		glBindVertexArray(this->VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);

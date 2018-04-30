@@ -58,7 +58,6 @@ bool processOneKey(GLFWwindow* window) {
 		previousState = "up";
 	}
 	if (oneKey == GLFW_PRESS && previousState == "up") {
-		std::cout << "Space Key Pressed!" << std::endl;
 		previousState = "down";
 		return true;
 	}
@@ -74,7 +73,6 @@ bool processTwoKey(GLFWwindow* window) {
 		previousState = "up";
 	}
 	if (twoKey == GLFW_PRESS && previousState == "up") {
-		std::cout << "Two Pressed!" << std::endl;
 		previousState = "down";
 		return true;
 	}
@@ -110,6 +108,7 @@ double screenToOpengl(double cord, char* axis) {
 	return returnCord;
 }
 
+//clears screen
 void clearScreen(std::vector<drawTriangle*>* triangles, std::vector<drawRectangle*>* rectangles) {
 		triangles->clear();
 		rectangles->clear();
@@ -160,7 +159,11 @@ int main() {
 	std::vector<drawTriangle*>* triangles = new std::vector<drawTriangle*>;//stores all my triangles
 	std::vector<drawRectangle*>* rectangles = new std::vector<drawRectangle*>;//stores all my triangles
 
-	while (!glfwWindowShouldClose(window)) { //rendering loop
+
+	/**
+		RENDERING LOOP	
+	**/
+	while (!glfwWindowShouldClose(window)) {
 		currShader.use();
 		//change colors
 		if (!triangles->empty() || !rectangles->empty()) {
@@ -173,7 +176,6 @@ int main() {
 		currShader.setFloat("ourColor", red, green, blue);
 		triangles = processInput(window, read, triangles, rectangles); //listens for key/mouse input
 
-		//checks for 1 or 2 key press to add rectangles or triangles
 		//also may want to create an "object" parent class and have rectangles and triangles inherit, then you can have array of objects instead of separate arrays
 		if (mouse_button_callback(window)){
 			if (drawMode == "t") {
@@ -195,7 +197,6 @@ int main() {
 		}
 		
 		glClear(GL_COLOR_BUFFER_BIT);
-		//TODO change how this works so it is more friendly to the draw triangles class
 		if (!triangles->empty()) {
 			for (int i = 0; i < triangles->size(); i++) {
 				triangles->at(i)->renderTriangle();
@@ -213,8 +214,12 @@ int main() {
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-	
-	//delete triangles
+	/**
+		END OF RENDERING LOOP	
+	**/
+
+
+	//delete all objects 
 	triangles->clear();
 	rectangles->clear();
 
