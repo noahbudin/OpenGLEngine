@@ -1,3 +1,5 @@
+#define STB_IMAGE_IMPLEMENTATION
+#include "Textures/stb_image.h"
 #include "main.h"
 #include <iostream>
 /**
@@ -15,13 +17,31 @@ float blue = 0.00f;
 float colors[3] = { red, green, blue };
 float colorTime = 0.0f;
 //window constants
-const int width = 800;
-const int height = 600;
+const int width = 1280;
+const int height = 720;
 //space button bool
 char* previousState = "up";
 char* drawMode = "t";
 double cursorX;
 double cursorY;
+
+//testing textures, NOT FINISHED
+void testTextures(int width, int height) {
+	int nrChannels;
+	unsigned char* data = stbi_load("Textures/cat.jpg", &width, &height, &nrChannels, 0);
+	unsigned int texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		std::cout << "BROKEN TEXTURE ALSO FIX THIS MESSAGE" << std::endl;
+	}
+	stbi_image_free(data);
+
+}
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
@@ -86,7 +106,6 @@ bool mouse_button_callback(GLFWwindow* window) {
 		previousState = "up";
 	}
 	if (state == GLFW_PRESS && previousState == "up") {
-		std::cout << "Two Pressed!" << std::endl;
 		previousState = "down";
 		return true;
 	}

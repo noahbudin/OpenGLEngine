@@ -94,7 +94,7 @@ private:
 				std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
 			}
 			else {
-				std::cout << "SUCCESS IN COMPILING SHADER" << std::endl;
+				std::cout << "SUCCESS::SHADER_COMPILATION_" << type << std::endl;
 			}
 		}
 		else
@@ -106,7 +106,7 @@ private:
 				std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
 			}
 			else {
-				std::cout << "SUCCESS IN LINKING PROGRAM" << std::endl;
+				std::cout << "SUCCESS::PROGRAM_LINKING_" << type << std::endl;
 			}
 		}
 	}

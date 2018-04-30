@@ -152,6 +152,7 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="ReadLevelInfo.h" />
     <ClInclude Include="Shaders\Shader.h" />
+    <ClInclude Include="Textures\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\triangleFrag.frag" />
