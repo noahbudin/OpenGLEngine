@@ -1,8 +1,13 @@
+/**TODO 
+*Create only one instance of this object to handle all the triangles, send all triangles in VAO at once to buffer (move render and init triangle into their own render class)
+*
+*
+*
+**/
+
 #include "drawTriangle.h"
 
-	int drawTriangle::triangleCount = 0;
-	
-	//constructors read triangles needs to use this somehow
+	//create triangle based on width, height, position, ect.
 	drawTriangle::drawTriangle(float width, float height, float positionX, float positionY, int arrSize) {
 		this->positionX = positionX;
 		this->positionY = positionY;
@@ -10,29 +15,14 @@
 		this->height = height;
 		this->size = arrSize;
 		this->vertices = calcVerts();
-		triangleCount++;
 		for (int i = 0; i < arrSize; i++) {
 			this->verts[i] = vertices->at(i);
 		}	
 		this->initTriangle();
 	}
 
-	//depreciated
-	drawTriangle::drawTriangle() {
-		this->size = 9;
-		this->vertices = this->getRandVerts();
-		triangleCount++;
-		for (int i = 0; i < 9; i++) {
-			this->verts[i] = vertices->at(i);
-		}
-		this->initTriangle();
-	}
-
-	//currently read is passing a local std array to the vertice pointer, local var gets deleted and the world breaks
-	//for drawRectangles (as drawRec calcs its own vertices)
 	drawTriangle::drawTriangle(std::array<float, 9>* vertices) {
 		this->vertices = vertices;
-		triangleCount++;
 		for (int i = 0; i < 9; i++) {
 			this->verts[i] = vertices->at(i);
 		}	
@@ -42,10 +32,10 @@
 	drawTriangle::~drawTriangle() {
 			glDeleteVertexArrays(1, &this->VAO);
 			glDeleteBuffers(1, &this->VBO);
-			//delete[] this->verts;
+			delete[] this->vertices;
+			this->vertices = nullptr;
 	}
 	
-	//TODO Create only one instance of this object to handle all the triangles, send all triangles in VAO at once to buffer
 	void drawTriangle::initTriangle() {
 		//Creates VBO Buffer object, binds arraybuffer to VBO and sends the gpu the buffer with all the triangles's vertices
 		glGenVertexArrays(1, &this->VAO);
@@ -63,8 +53,6 @@
 	
 	void drawTriangle::renderTriangle() {
 		//for all rendering use this shader program
-		//glUseProgram(shaderProgram);
-
 		glBindVertexArray(this->VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glBindVertexArray(0);
@@ -123,8 +111,4 @@
 			verts->at(i) = newVert;
 		}
 		return verts;
-	}
-	
-	int drawTriangle::countTriangle() {
-		return triangleCount;
 	}

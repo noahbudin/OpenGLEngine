@@ -1,8 +1,15 @@
 #include "main.h"
 #include <iostream>
+/**TODO:
+*Clean up constants list, abstract into objects more?
+*process input reading file into triangles only not rectangles(fix with an object class that holds all shapes?)
+*
+*
+*/
+
+
 /**
 /CONSTANTS
-/TODO: Clean up constants list, abstract into objects more?
 **/
 //background colors
 float clearRed = 1.0f;
@@ -17,7 +24,7 @@ float colorTime = 0.0f;
 //window constants
 const int width = 800;
 const int height = 600;
-//space button bool
+//button constants
 char* previousState = "up";
 char* drawMode = "t";
 double cursorX;
@@ -40,7 +47,6 @@ std::vector<drawTriangle*>* processInput(GLFWwindow* window, ReadWriteLevelInfo*
 		readWrite->writeFile(triangles, rectangles);
 	}
 	if (rKey == GLFW_PRESS) {
-		//std::vector<drawTriangle*>* temp = new std::vector<drawTriangle*>;
 		triangles = readWrite->readFile(triangles);
 		std::cout << "DONE" << std::endl;
 	}
@@ -50,7 +56,7 @@ std::vector<drawTriangle*>* processInput(GLFWwindow* window, ReadWriteLevelInfo*
 	return triangles;
 }
 
-//checks for space key and places single random triangle on press
+//switches shape to triangle
 bool processOneKey(GLFWwindow* window) {
 	int oneKey = glfwGetKey(window, GLFW_KEY_1);
 
@@ -66,6 +72,7 @@ bool processOneKey(GLFWwindow* window) {
 	}
 }
 
+//switches shape to square
 bool processTwoKey(GLFWwindow* window) {
 	int twoKey = glfwGetKey(window, GLFW_KEY_2);
 
@@ -80,13 +87,14 @@ bool processTwoKey(GLFWwindow* window) {
 		return false;
 	}
 }
+
+//places shape on left mouse click
 bool mouse_button_callback(GLFWwindow* window) {
 	int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
 	if (state == GLFW_RELEASE) {
 		previousState = "up";
 	}
 	if (state == GLFW_PRESS && previousState == "up") {
-		std::cout << "Two Pressed!" << std::endl;
 		previousState = "down";
 		return true;
 	}
@@ -121,14 +129,14 @@ int main() {
 	
 	//initialize read/write object
 	ReadWriteLevelInfo* read = new ReadWriteLevelInfo();
-
+	//initialize color changer
 	ColorChanger* cg = new ColorChanger(red, green, blue);
 
-	glfwInit(); //intializes glfw 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); //window hint configures glfw options, 1st param is option, second is choice
+	//intializes glfw
+	glfwInit();  
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
 	//create glfw window and make current context
 	GLFWwindow* window = glfwCreateWindow(width, height, "First Window", NULL, NULL);
@@ -147,8 +155,8 @@ int main() {
 	}
 
 	glViewport(0, 0, width, height);
-	glClearColor(clearRed, clearGreen, clearBlue, 0.0f); //put colors in seperate vars later
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); //kinda like an event listener, this is for resizing window
+	glClearColor(clearRed, clearGreen, clearBlue, 0.0f); 
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); 
 
 	//wireframe mode
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -157,7 +165,7 @@ int main() {
 	currShader.use();
 
 	std::vector<drawTriangle*>* triangles = new std::vector<drawTriangle*>;//stores all my triangles
-	std::vector<drawRectangle*>* rectangles = new std::vector<drawRectangle*>;//stores all my triangles
+	std::vector<drawRectangle*>* rectangles = new std::vector<drawRectangle*>;//stores all my rectangles
 
 
 	/**
@@ -174,9 +182,8 @@ int main() {
 		}
 
 		currShader.setFloat("ourColor", red, green, blue);
-		triangles = processInput(window, read, triangles, rectangles); //listens for key/mouse input
+		triangles = processInput(window, read, triangles, rectangles); //need to fix later?
 
-		//also may want to create an "object" parent class and have rectangles and triangles inherit, then you can have array of objects instead of separate arrays
 		if (mouse_button_callback(window)){
 			if (drawMode == "t") {
 				drawTriangle* tempT = new drawTriangle(0.2, 0.2, screenToOpengl(cursorX, "x"), screenToOpengl(cursorY, "y"), 9);
@@ -197,6 +204,7 @@ int main() {
 		}
 		
 		glClear(GL_COLOR_BUFFER_BIT);
+		
 		if (!triangles->empty()) {
 			for (int i = 0; i < triangles->size(); i++) {
 				triangles->at(i)->renderTriangle();
@@ -209,7 +217,7 @@ int main() {
 			}
 		}
 		mouse_button_callback(window);
-		glfwGetCursorPos(window, &cursorX, &cursorY); //inefficient
+		glfwGetCursorPos(window, &cursorX, &cursorY); 
 		glfwSwapInterval(1); //this limits rendering to the refresh rate of the monitor
 		glfwSwapBuffers(window);
 		glfwPollEvents();
