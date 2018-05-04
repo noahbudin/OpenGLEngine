@@ -11,6 +11,9 @@
 #include <ctime>
 #include <array>
 #include <cmath>
+#include "Include/glm/glm.hpp"
+#include "Include/glm/gtc/matrix_transform.hpp"
+#include "Include/glm/gtc/type_ptr.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 std::vector<drawTriangle*>* processInput(GLFWwindow* window, ReadWriteLevelInfo* readWrite, std::vector<drawTriangle>* triangles);
