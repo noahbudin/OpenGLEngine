@@ -138,6 +138,7 @@ void ReadWriteLevelInfo::writeFile(std::vector<drawTriangle*>* triangles, std::v
 		ofstr << "}\n";
 	}
 
+	/**
 	for (int i = 0; i < rectangles->size(); i++) {
 		std::vector<drawTriangle*>* trianglesFromRec = rectangles->at(i)->getTriangles();
 		for (int r = 0; r < 2; r++) {
@@ -154,6 +155,7 @@ void ReadWriteLevelInfo::writeFile(std::vector<drawTriangle*>* triangles, std::v
 			ofstr << "}\n";
 		}
 	}
+	**/
 	ofstr.close();
 	std::cout << "Success!" << std::endl;
 }

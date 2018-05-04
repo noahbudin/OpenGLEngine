@@ -22,9 +22,9 @@ float blue = 0.00f;
 float colors[3] = { red, green, blue };
 float colorTime = 0.0f;
 //window constants
-const int width = 800;
-const int height = 600;
-//button constants
+const int width = 1280;
+const int height = 720;
+//space button bool
 char* previousState = "up";
 char* drawMode = "t";
 double cursorX;
@@ -118,8 +118,8 @@ double screenToOpengl(double cord, char* axis) {
 
 //clears screen
 void clearScreen(std::vector<drawTriangle*>* triangles, std::vector<drawRectangle*>* rectangles) {
-		triangles->clear();
-		rectangles->clear();
+	triangles->clear();
+	rectangles->clear();
 }
 
 //main
@@ -213,6 +213,7 @@ int main() {
 	
 		if (!rectangles->empty()) {
 			for (int i = 0; i < rectangles->size(); i++) {
+				//BUG trying to access some bad memory
 				rectangles->at(i)->renderRectangle();
 			}
 		}

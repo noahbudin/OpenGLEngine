@@ -24,3 +24,4 @@ bool mouse_button_callback(GLFWwindow* window);
 double screenToOpengl(double returnCord);
 double screenToOpengl(double cord, char* axis);
 void clearScreen(std::vector<drawTriangle*>* triangles, std::vector<drawRectangle*>* rectangles);
+void testTextures(int width, int height);
