@@ -10,6 +10,7 @@ class drawTriangle {
 		std::array<float, 9>* vertices;
 		unsigned int VBO;
 		unsigned int VAO;
+		unsigned int EBO;
 		unsigned int shader;
 		static const char* vertexShaderSource;
 		static const char* fragShaderSource;

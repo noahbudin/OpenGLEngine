@@ -168,7 +168,11 @@ int main() {
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); 
 
 	//wireframe mode
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glDisable(GL_LIGHTING);
+	glDisable(GL_TEXTURE_2D);
+	glColor4f(1, 1, 1, 1);
+	glDisable(GL_CULL_FACE);
 	
 	Shader currShader = Shader("Shaders/triangleVert.vert", "Shaders/triangleFrag.frag");
 	currShader.use();
@@ -182,7 +186,7 @@ int main() {
 	**/
 	while (!glfwWindowShouldClose(window)) {
 		currShader.use();
-		//change colors
+		/** change colors
 		if (!triangles->empty() || !rectangles->empty()) {
 			red = cg->returnRed();
 			green = cg->returnGreen();
@@ -191,6 +195,7 @@ int main() {
 		}
 
 		currShader.setFloat("ourColor", red, green, blue);
+		**/
 		triangles = processInput(window, read, triangles, rectangles); //need to fix later?
 
 		if (mouse_button_callback(window)){
@@ -222,7 +227,6 @@ int main() {
 	
 		if (!rectangles->empty()) {
 			for (int i = 0; i < rectangles->size(); i++) {
-				//BUG trying to access some bad memory
 				rectangles->at(i)->renderRectangle();
 			}
 		}

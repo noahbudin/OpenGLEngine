@@ -11,12 +11,12 @@ class drawRectangle {
 		~drawRectangle();
 		unsigned int VBO;
 		unsigned int VAO;
+		unsigned int EBO;
 		unsigned int texture;
 		float getWidth();
 		float getHeight();
 		float getArea();
-		std::array<float, 12>* recVertCoords;
-		std::array<unsigned int, 6> recIndices;
+		std::array<int, 6>* recIndices;
 		void renderRectangle();
 		std::array<float, 2>* getPos();
 
@@ -25,8 +25,8 @@ class drawRectangle {
 		float height;
 		float width;
 		std::array<float, 2>* position;
-		std::array<float, 12>* calcVerts();
-		std::array<float, 12>* vertices;
+		std::array<float, 18>* calcVerts();
+		std::array<float, 18>* vertices;
 		void genTexture();
 		void initRectangle();
 };
