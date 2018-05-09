@@ -15,7 +15,6 @@ drawRectangle::drawRectangle(float width, float height, float positionX, float p
 	//also may be drawing corner vertices twice due to drawTriangle being called twice (optimize late)
 	this->initRectangle();
 	//this->genTexture();
-	this->recIndices = new std::array<int, 6>{ 0,1,3,1,2,3 };
 }
 
 
@@ -70,7 +69,7 @@ void drawRectangle::initRectangle() {
 	glGenBuffers(1, &this->VBO);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(this->vertices), this->vertices, GL_STATIC_DRAW); //copy vertice data into buffer array
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->vertices->size(), this->vertices, GL_STATIC_DRAW); //copy vertice data into buffer array
 
 	glBindVertexArray(this->VAO);
 	glEnableVertexAttribArray(0);
@@ -88,7 +87,7 @@ void drawRectangle::renderRectangle() {
 	//glBindTexture(GL_TEXTURE_2D, this->texture);
 	glBindVertexArray(this->VAO);
 	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	glDrawArrays(GL_TRIANGLES, 0, this->vertices->size());
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
 }
 
