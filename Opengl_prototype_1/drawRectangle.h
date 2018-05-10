@@ -11,7 +11,7 @@ class drawRectangle {
 		~drawRectangle();
 		unsigned int VBO;
 		unsigned int VAO;
-		unsigned int EBO;
+		unsigned int texBuffer;
 		unsigned int texture;
 		float getWidth();
 		float getHeight();
@@ -27,6 +27,7 @@ class drawRectangle {
 		std::array<float, 2>* position;
 		std::array<float, 18>* calcVerts();
 		std::array<float, 18>* vertices;
+		std::array<float, 12>* texCoords; //might need to make 18
 		void genTexture();
 		void initRectangle();
 };

@@ -10,11 +10,31 @@ drawRectangle::drawRectangle(float width, float height, float positionX, float p
 	this->position->at(1) = positionY;
 	this->vertices = this->calcVerts();
 	this->texture;
+	this->texCoords = new std::array<float, 12>{
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+		0.0f, 1.0f,
+		0.0f, 1.0f,
+		0.0f, 0.0f,
+		1.0f, 0.0f
+	};
+	//map vertex coords to tex coords
+	//also this is extremely ugly and inefficient but im out of time
+	/**
+	std::vector<float> temp;
+	for (int i = 0; i < this->vertices->size(); i++) {
+		if (this->vertices->at(i) != 0.0f) {
+			temp.push_back(this->vertices->at(i));
+		}
+	}
+	for (int i = 0; i < temp.size(); i++) {
+		texCoords->at(i) = temp.at(i);
+	}
+	**/
 
 	//drawTriangle twice passing array size 9 of vertices based off of width, height, center calculations
 	//also may be drawing corner vertices twice due to drawTriangle being called twice (optimize late)
 	this->initRectangle();
-	//this->genTexture();
 }
 
 
@@ -65,49 +85,88 @@ std::array<float, 18>* drawRectangle::calcVerts() {
 }
 
 void drawRectangle::initRectangle() {
-	glGenVertexArrays(1, &this->VAO);
-	glGenBuffers(1, &this->VBO);
 	
+
+	//buffer for vertices
+	glGenBuffers(1, &this->VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->vertices->size(), this->vertices, GL_STATIC_DRAW); //copy vertice data into buffer array
 
+	//buffer for texture coordinates
+	glGenBuffers(1, &this->texBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, this->texBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(this->texCoords), this->texCoords, GL_STATIC_DRAW);
+
+	//vao here?
+	glGenVertexArrays(1, &this->VAO);
 	glBindVertexArray(this->VAO);
+	
+	//add vbo to vao
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+	//add texcoords to vao
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, this->texBuffer);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+
 	glBindVertexArray(0);
 	
 	GLenum error = glGetError();
-	std::cout << "ERRORS: " << error << std::endl;
-}
+	std::cout << "ERRORS BEFORE TEXTURE: " << error << std::endl;
 
-void drawRectangle::renderRectangle() {
-	//for all rendering use this shader program
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, this->texture);
-	glBindVertexArray(this->VAO);
-	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-	glBindVertexArray(0);
-}
-
-void drawRectangle::genTexture() {
-	int nrChannels;
+	//read textures
+	int width, height, nrChannels;
 	int tempTexInt = 10;
-	unsigned char* data = stbi_load("Textures/cat.jpg", &tempTexInt, &tempTexInt, &nrChannels, 0);
 	glGenTextures(1, &this->texture);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, this->texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
+	unsigned char* data = stbi_load("Textures/container.jpg", &width, &height, &nrChannels, 0);
 	if (data) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else {
-		std::cout << "BROKEN TEXTURE ALSO FIX THIS MESSAGE" << std::endl;
+		std::cout << "FAILED TO LOAD TEXTURE" << std::endl;
+	}
+	stbi_image_free(data);
+	
+	error = glGetError();
+	std::cout << "ERRORS AFTER TEXTURE: " << error << std::endl;
+}
+
+void drawRectangle::renderRectangle() {
+	//for all rendering use this shader program
+	//glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, this->texture);
+	glBindVertexArray(this->VAO);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glBindVertexArray(0);
+}
+
+//NOT USING FOR NOW
+void drawRectangle::genTexture() {
+	int width, height, nrChannels;
+	int tempTexInt = 10;
+	glGenTextures(1, &this->texture);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, this->texture);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	unsigned char* data = stbi_load("Textures/cat.jpg", &width, &height, &nrChannels, 0);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		std::cout << "FAILED TO LOAD TEXTURE" << std::endl;
 	}
 	stbi_image_free(data);
 }

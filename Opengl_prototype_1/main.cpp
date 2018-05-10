@@ -124,15 +124,6 @@ void clearScreen(std::vector<drawTriangle*>* triangles, std::vector<drawRectangl
 
 //main
 int main() {
-
-	glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
-	glm::mat4 trans;
-	trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
-	vec = trans * vec;
-	std::cout << vec.x << vec.y << vec.z << std::endl;
-
-
-
 	// generate random seed for rand() to use later
 	srand(static_cast <unsigned> (time(0))); 
 	
@@ -169,10 +160,11 @@ int main() {
 
 	//wireframe mode
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glDisable(GL_LIGHTING);
-	glDisable(GL_TEXTURE_2D);
-	glColor4f(1, 1, 1, 1);
-	glDisable(GL_CULL_FACE);
+	//glDisable(GL_LIGHTING);
+	//glDisable(GL_TEXTURE_2D);
+	//glColor4f(1, 1, 1, 1);
+	//glDisable(GL_CULL_FACE);
+	glDisable(GL_BLEND);
 	
 	Shader currShader = Shader("Shaders/triangleVert.vert", "Shaders/triangleFrag.frag");
 	currShader.use();
@@ -204,7 +196,7 @@ int main() {
 				triangles->push_back(tempT);
 			}
 			else if (drawMode == "r") {
-				drawRectangle* tempRec = new drawRectangle(0.2, 0.2, screenToOpengl(cursorX, "x"), screenToOpengl(cursorY, "y"));
+				drawRectangle* tempRec = new drawRectangle(0.5, 0.5, screenToOpengl(cursorX, "x"), screenToOpengl(cursorY, "y"));
 				rectangles->push_back(tempRec);
 			}
 		}
