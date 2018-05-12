@@ -5,7 +5,7 @@
 **/
 
 #include "drawTriangle.h"
-#include "Textures/stb_image.h"
+#include "Libraries/stb_image.h"
 
 //create triangle based on width, height, position, ect.
 drawTriangle::drawTriangle(float width, float height, float positionX, float positionY, char* textureLocation) {
@@ -48,7 +48,6 @@ void drawTriangle::initTriangle() {
 
 void drawTriangle::renderTriangle() {
 	//for all rendering use this shader program
-	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, this->texture);
 	glBindVertexArray(this->VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -98,9 +97,10 @@ void drawTriangle::genTexture() {
 
 	glGenTextures(1, &this->texture);
 	glBindTexture(GL_TEXTURE_2D, this->texture);
+	stbi_set_flip_vertically_on_load(true);
 	unsigned char* data = stbi_load(this->textureLocation, &width, &height, &nrChannels, 0);
 	if (data) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 	}
 	else {
 		std::cout << "FAILED TO LOAD TEXTURE" << std::endl;

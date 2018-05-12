@@ -2,7 +2,7 @@
 #include <iostream>
 /**TODO:
 *Clean up constants list, abstract into objects more?
-*process input reading file into triangles only not rectangles(fix with an object class that holds all shapes?)
+*
 *
 *
 */
@@ -113,6 +113,7 @@ double screenToOpengl(double cord, char* axis) {
 		returnCord = (((*height / 2) - cord) / (*height / 2));
 	}
 	std::cout << "returnCord: " << returnCord << std::endl;
+	std::cout << "screen coord " << axis << " : " << cord << std::endl;
 	return returnCord;
 }
 
@@ -162,6 +163,10 @@ int main() {
 	Shader currShader = Shader("Shaders/triangleVert.vert", "Shaders/triangleFrag.frag");
 	currShader.use();
 
+	//initialize UI
+	UI* ui = new UI(*width, *height);
+
+	//construct object list
 	std::vector<drawTriangle*>* triangles = new std::vector<drawTriangle*>;//stores all my triangles
 	std::vector<drawRectangle*>* rectangles = new std::vector<drawRectangle*>;//stores all my rectangles
 
@@ -175,11 +180,11 @@ int main() {
 
 		if (mouse_button_callback(window)){
 			if (drawMode == "t") {
-				drawTriangle* tempT = new drawTriangle(0.2, 0.2, screenToOpengl(cursorX, "x"), screenToOpengl(cursorY, "y"), "Textures/cat.jpg");
+				drawTriangle* tempT = new drawTriangle(0.2, 0.2, screenToOpengl(cursorX, "x"), screenToOpengl(cursorY, "y"), "Textures/container.jpg");
 				triangles->push_back(tempT);
 			}
 			else if (drawMode == "r") {
-				drawRectangle* tempRec = new drawRectangle(0.5, 0.5, screenToOpengl(cursorX, "x"), screenToOpengl(cursorY, "y"), "Textures/container.jpg");
+				drawRectangle* tempRec = new drawRectangle(0.5, 0.5, screenToOpengl(cursorX, "x"), screenToOpengl(cursorY, "y"), "Textures/cat.jpg");
 				rectangles->push_back(tempRec);
 			}
 		}
@@ -206,6 +211,9 @@ int main() {
 				rectangles->at(i)->renderRectangle();
 			}
 		}
+		//render UI elements	
+		ui->renderUI();
+
 		mouse_button_callback(window);
 		glfwGetCursorPos(window, &cursorX, &cursorY); 
 		glfwSwapInterval(1); //this limits rendering to the refresh rate of the monitor

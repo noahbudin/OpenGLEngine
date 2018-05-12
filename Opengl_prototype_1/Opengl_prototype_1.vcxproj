@@ -142,6 +142,7 @@
     <ClCompile Include="Libraries\glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ReadWriteLevelInfo.cpp" />
+    <ClCompile Include="UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ColorChanger.h" />
@@ -297,10 +298,12 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="ReadLevelInfo.h" />
     <ClInclude Include="Shaders\Shader.h" />
-    <ClInclude Include="Textures\stb_image.h" />
+    <ClInclude Include="Libraries\stb_image.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="UI.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="Include\glm\detail\func_common.inl" />
     <None Include="Include\glm\detail\func_common_simd.inl" />
     <None Include="Include\glm\detail\func_exponential.inl" />

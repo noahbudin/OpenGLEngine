@@ -1,6 +1,6 @@
 #include "drawRectangle.h"
 #define STB_IMAGE_IMPLEMENTATION
-#include "Textures\stb_image.h"
+#include "Libraries\stb_image.h"
 
 drawRectangle::drawRectangle(float width, float height, float positionX, float positionY, char* textureLocation) {
 	this->width = width;
@@ -71,9 +71,6 @@ std::array<float, 24>* drawRectangle::calcVerts() {
 			break;
 		}
 	}
-	for (int i = 0; i < returnVerts->size(); i++) {
-		std::cout << i << ": " << returnVerts->at(i) << " " << std::endl;
-	}
 	return returnVerts;
 }
 
@@ -95,7 +92,6 @@ void drawRectangle::initRectangle() {
 
 void drawRectangle::renderRectangle() {
 	//for all rendering use this shader program
-	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, this->texture);
 	glBindVertexArray(this->VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -108,9 +104,11 @@ void drawRectangle::genTexture() {
 
 	glGenTextures(1, &this->texture);
 	glBindTexture(GL_TEXTURE_2D, this->texture);
+	stbi_set_flip_vertically_on_load(true);
 	unsigned char* data = stbi_load(this->textureLocation, &width, &height, &nrChannels, 0);
 	if (data) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		std::cout << "TEXTURE LOADED SUCCESSFULLY" << std::endl;
 	}
 	else {
 		std::cout << "FAILED TO LOAD TEXTURE" << std::endl;

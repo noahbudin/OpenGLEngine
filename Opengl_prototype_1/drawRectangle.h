@@ -16,12 +16,10 @@ class drawRectangle {
 		float getWidth();
 		float getHeight();
 		float getArea();
-		std::array<int, 6>* recIndices;
 		void renderRectangle();
 		std::array<float, 2>* getPos();
 
 	private:
-		//something
 		float height;
 		float width;
 		std::array<float, 2>* position;
