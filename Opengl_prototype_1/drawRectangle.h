@@ -25,9 +25,8 @@ class drawRectangle {
 		float height;
 		float width;
 		std::array<float, 2>* position;
-		std::array<float, 18>* calcVerts();
-		std::array<float, 18>* vertices;
-		std::array<float, 12>* texCoords; //might need to make 18
+		std::array<float, 24>* calcVerts();
+		std::array<float, 24>* vertices;
 		void genTexture();
 		void initRectangle();
 };

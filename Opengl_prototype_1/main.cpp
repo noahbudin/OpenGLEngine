@@ -164,7 +164,6 @@ int main() {
 	//glDisable(GL_TEXTURE_2D);
 	//glColor4f(1, 1, 1, 1);
 	//glDisable(GL_CULL_FACE);
-	glDisable(GL_BLEND);
 	
 	Shader currShader = Shader("Shaders/triangleVert.vert", "Shaders/triangleFrag.frag");
 	currShader.use();
