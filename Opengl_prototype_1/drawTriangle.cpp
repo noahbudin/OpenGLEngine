@@ -1,114 +1,115 @@
 /**TODO 
-*Create only one instance of this object to handle all the triangles, send all triangles in VAO at once to buffer (move render and init triangle into their own render class)
-*
+* Make an object class as parent to triangles and rectangles, make circles eventually
 *
 *
 **/
 
 #include "drawTriangle.h"
+#include "Textures/stb_image.h"
 
-	//create triangle based on width, height, position, ect.
-	drawTriangle::drawTriangle(float width, float height, float positionX, float positionY, int arrSize) {
-		this->positionX = positionX;
-		this->positionY = positionY;
-		this->width = width;
-		this->height = height;
-		this->size = arrSize;
-		this->vertices = calcVerts();
-		for (int i = 0; i < arrSize; i++) {
-			this->verts[i] = vertices->at(i);
-		}	
-		this->initTriangle();
-	}
+//create triangle based on width, height, position, ect.
+drawTriangle::drawTriangle(float width, float height, float positionX, float positionY, char* textureLocation) {
+	this->positionX = positionX;
+	this->positionY = positionY;
+	this->width = width;
+	this->height = height;
+	this->vertices = calcVerts();
+	this->textureLocation = textureLocation;
+	this->texture;
 
-	drawTriangle::drawTriangle(std::array<float, 9>* vertices) {
-		this->vertices = vertices;
-		for (int i = 0; i < 9; i++) {
-			this->verts[i] = vertices->at(i);
-		}	
-		this->initTriangle();
-	}
+	this->genTexture();
+	this->initTriangle();
+}
 
-	drawTriangle::~drawTriangle() {
-			glDeleteVertexArrays(1, &this->VAO);
-			glDeleteBuffers(1, &this->VBO);
-			delete[] this->vertices;
-			this->vertices = nullptr;
-	}
-	
-	void drawTriangle::initTriangle() {
-		//Creates VBO Buffer object, binds arraybuffer to VBO and sends the gpu the buffer with all the triangles's vertices
-		glGenVertexArrays(1, &this->VAO);
-		glGenBuffers(1, &this->VBO);
-		
-		glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(this->verts), this->verts, GL_STATIC_DRAW); //copy vertice data into buffer array
+drawTriangle::drawTriangle(std::array<float, 9>* vertices) {
+}
 
-		glBindVertexArray(this->VAO);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
+drawTriangle::~drawTriangle() {
+		glDeleteVertexArrays(1, &this->VAO);
+		glDeleteBuffers(1, &this->VBO);
+		delete[] this->vertices;
+		this->vertices = nullptr;
+}
+
+void drawTriangle::initTriangle() {
+	//Creates VBO Buffer object, binds arraybuffer to VBO and sends the gpu the buffer with all the triangles's vertices
+	glGenVertexArrays(1, &this->VAO);
+
+	glGenBuffers(1, &this->VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->vertices->size(), this->vertices, GL_STATIC_DRAW); //copy vertice data into buffer array
+
+	glBindVertexArray(this->VAO);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (GLvoid*)0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
+void drawTriangle::renderTriangle() {
+	//for all rendering use this shader program
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, this->texture);
+	glBindVertexArray(this->VAO);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glBindVertexArray(0);
+}
+
+void drawTriangle::printVertices() {
+	for (int i = 0; i < this->vertices->size(); i++) {
+		std::cout << "index: " << i << " vertex: " << this->vertices->at(i) << std::endl;
 	}
-	
-	void drawTriangle::renderTriangle() {
-		//for all rendering use this shader program
-		glBindVertexArray(this->VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-		glBindVertexArray(0);
-	}
-	
-	void drawTriangle::printVertices() {
-		for (int i = 0; i < this->size; i++) {
-			std::cout << "index: " << i << " vertex: " << this->verts[i] << std::endl;
+}
+
+std::array<float, 12>* drawTriangle::calcVerts() {
+	std::array<float, 12>* returnVerts = new std::array<float, 12>();
+	returnVerts->fill(0.0f);
+	for (int i = 0; i < 12; i++) {
+		switch (i) {
+		//top vertice
+		case 0:
+			returnVerts->at(i) = this->positionX; //x
+			returnVerts->at(i + 1) = this->positionY + this->height / 2; //y
+			returnVerts->at(i + 2) = 0.5f; //texture x
+			returnVerts->at(i + 3) = 1.0f; //texture y
+			break;
+		//left vertice
+		case 4:
+			returnVerts->at(i) = this->positionX - this->width/2; //x
+			returnVerts->at(i + 1) = this->positionY - this->height / 2; //y
+			returnVerts->at(i + 2) = 0.0f; //texture x
+			returnVerts->at(i + 3) = 0.0f; //texture y
+			break;
+		//right corner
+		case 8:
+			returnVerts->at(i) = this->positionX + this->width/2; //x
+			returnVerts->at(i + 1) = this->positionY - this->height / 2; //y
+			returnVerts->at(i + 2) = 1.0f; //texture x
+			returnVerts->at(i + 3) = 0.0f; //texture y
+			break;
 		}
 	}
+	return returnVerts;
+}
 
-	std::array<float, 9>* drawTriangle::calcVerts() {
-		std::array<float, 9>* returnVerts = new std::array<float, 9>();
-		returnVerts->fill(0.0f);
-		for (int i = 0; i < 9; i++) {
-			switch (i) {
-			//top vertice
-			case 0:
-				returnVerts->at(i) = this->positionX; //x
-				returnVerts->at(i + 1) = this->positionY + this->height / 2; //y
-				returnVerts->at(i + 2) = 0.0f; //z
-				break;
-			//left corner
-			case 3:
-				returnVerts->at(i) = this->positionX - this->width/2; //x
-				returnVerts->at(i + 1) = this->positionY - this->height / 2; //y
-				returnVerts->at(i + 2) = 0.0f; //z
-				break;
-			//right corner
-			case 6:
-				returnVerts->at(i) = this->positionX + this->width/2; //x
-				returnVerts->at(i + 1) = this->positionY - this->height / 2; //y
-				returnVerts->at(i + 2) = 0.0f; //z
-				break;
-			}
-		}
-		return returnVerts;
+void drawTriangle::genTexture() {
+	//read textures
+	int width, height, nrChannels;
+
+	glGenTextures(1, &this->texture);
+	glBindTexture(GL_TEXTURE_2D, this->texture);
+	unsigned char* data = stbi_load(this->textureLocation, &width, &height, &nrChannels, 0);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 	}
-	
-	std::array<float, 9>* drawTriangle::getRandVerts() {
-		std::array<float, 9>* verts = new std::array<float, 9>();
-		float triangleSize = 1.0f;
-		
-		for (int i = 0; i < 9; i++) {
-			float newVert;
-			if (i + 1 % 3 == 0) {
-				newVert = 0.0f;
-			}
-			else {
-				float random1 = ((float)rand()) / (float)RAND_MAX;
-				float random2 = ((float)rand()) / (float)RAND_MAX;
-				float negVert = random1 * -triangleSize;
-				float posVert = random2 * triangleSize;
-				newVert = negVert + posVert;
-			}
-			verts->at(i) = newVert;
-		}
-		return verts;
+	else {
+		std::cout << "FAILED TO LOAD TEXTURE" << std::endl;
 	}
+	stbi_image_free(data);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}

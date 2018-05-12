@@ -7,7 +7,7 @@
 
 class drawRectangle {
 	public:
-		drawRectangle(float width, float height, float positionX, float positionY);
+		drawRectangle(float width, float height, float positionX, float positionY, char * textureLocation);
 		~drawRectangle();
 		unsigned int VBO;
 		unsigned int VAO;
@@ -27,6 +27,7 @@ class drawRectangle {
 		std::array<float, 2>* position;
 		std::array<float, 24>* calcVerts();
 		std::array<float, 24>* vertices;
+		char* textureLocation;
 		void genTexture();
 		void initRectangle();
 };

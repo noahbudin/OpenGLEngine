@@ -13,7 +13,7 @@
 **/
 //background colors
 float clearRed = 1.0f;
-float clearGreen = 0.0f;
+float clearGreen = 1.0f;
 float clearBlue = 1.0f;
 //triangle colors
 float red = 0.00f;
@@ -22,8 +22,8 @@ float blue = 0.00f;
 float colors[3] = { red, green, blue };
 float colorTime = 0.0f;
 //window constants
-const int width = 1280;
-const int height = 720;
+int* width = new int(250);
+int* height = new int(100);
 //space button bool
 char* previousState = "up";
 char* drawMode = "t";
@@ -34,7 +34,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
-//checks for escape key, will close window
+//checks for key presses and does appropriate things
 std::vector<drawTriangle*>* processInput(GLFWwindow* window, ReadWriteLevelInfo* readWrite, std::vector<drawTriangle*>* triangles, std::vector<drawRectangle*>* rectangles) {
 	int escapeKey = glfwGetKey(window, GLFW_KEY_ESCAPE);
 	int rKey = glfwGetKey(window, GLFW_KEY_R);
@@ -107,10 +107,10 @@ bool mouse_button_callback(GLFWwindow* window) {
 double screenToOpengl(double cord, char* axis) {
 	double returnCord;
 	if (axis == "x") {
-		returnCord = ((cord - (width / 2)) / (width / 2));
+		returnCord = ((cord - (*width / 2)) / (*width / 2));
 	}
 	else {
-		returnCord = (((height / 2) - cord) / (height / 2));
+		returnCord = (((*height / 2) - cord) / (*height / 2));
 	}
 	std::cout << "returnCord: " << returnCord << std::endl;
 	return returnCord;
@@ -124,28 +124,26 @@ void clearScreen(std::vector<drawTriangle*>* triangles, std::vector<drawRectangl
 
 //main
 int main() {
-	// generate random seed for rand() to use later
-	srand(static_cast <unsigned> (time(0))); 
-	
 	//initialize read/write object
 	ReadWriteLevelInfo* read = new ReadWriteLevelInfo();
-	//initialize color changer
-	ColorChanger* cg = new ColorChanger(red, green, blue);
 
-	//intializes glfw
+	//intializes glfw, sets intial window settings
 	glfwInit();  
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	//create glfw window and make current context
-	GLFWwindow* window = glfwCreateWindow(width, height, "First Window", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(*width, *height, "First Window", NULL, NULL);
 	if (window == NULL) {
 		std::cout << "Failed to create glfw window" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
 	
+	//maximizes window, gets width and height, makes window current context
+	glfwMaximizeWindow(window);
+	glfwGetWindowSize(window, width, height);
 	glfwMakeContextCurrent(window);
 	
 	//use GLAD to manage pointers to opengl functions
@@ -154,16 +152,12 @@ int main() {
 		return -1;
 	}
 
-	glViewport(0, 0, width, height);
+	glViewport(0, 0, *width, *height);
 	glClearColor(clearRed, clearGreen, clearBlue, 0.0f); 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); 
 
 	//wireframe mode
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	//glDisable(GL_LIGHTING);
-	//glDisable(GL_TEXTURE_2D);
-	//glColor4f(1, 1, 1, 1);
-	//glDisable(GL_CULL_FACE);
 	
 	Shader currShader = Shader("Shaders/triangleVert.vert", "Shaders/triangleFrag.frag");
 	currShader.use();
@@ -177,25 +171,15 @@ int main() {
 	**/
 	while (!glfwWindowShouldClose(window)) {
 		currShader.use();
-		/** change colors
-		if (!triangles->empty() || !rectangles->empty()) {
-			red = cg->returnRed();
-			green = cg->returnGreen();
-			blue = cg->returnBlue();
-			cg->changeColors();
-		}
-
-		currShader.setFloat("ourColor", red, green, blue);
-		**/
 		triangles = processInput(window, read, triangles, rectangles); //need to fix later?
 
 		if (mouse_button_callback(window)){
 			if (drawMode == "t") {
-				drawTriangle* tempT = new drawTriangle(0.2, 0.2, screenToOpengl(cursorX, "x"), screenToOpengl(cursorY, "y"), 9);
+				drawTriangle* tempT = new drawTriangle(0.2, 0.2, screenToOpengl(cursorX, "x"), screenToOpengl(cursorY, "y"), "Textures/cat.jpg");
 				triangles->push_back(tempT);
 			}
 			else if (drawMode == "r") {
-				drawRectangle* tempRec = new drawRectangle(0.5, 0.5, screenToOpengl(cursorX, "x"), screenToOpengl(cursorY, "y"));
+				drawRectangle* tempRec = new drawRectangle(0.5, 0.5, screenToOpengl(cursorX, "x"), screenToOpengl(cursorY, "y"), "Textures/container.jpg");
 				rectangles->push_back(tempRec);
 			}
 		}
@@ -210,6 +194,7 @@ int main() {
 		
 		glClear(GL_COLOR_BUFFER_BIT);
 		
+		//render all triangles and rectangles from lists
 		if (!triangles->empty()) {
 			for (int i = 0; i < triangles->size(); i++) {
 				triangles->at(i)->renderTriangle();
@@ -236,8 +221,9 @@ int main() {
 	triangles->clear();
 	rectangles->clear();
 
+	delete triangles;
+	delete rectangles;
 	delete read;
-	delete cg;
 
 	glfwTerminate(); //safely deletes all objects and stuff with glfw
 

@@ -2,12 +2,13 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "Textures\stb_image.h"
 
-drawRectangle::drawRectangle(float width, float height, float positionX, float positionY) {
+drawRectangle::drawRectangle(float width, float height, float positionX, float positionY, char* textureLocation) {
 	this->width = width;
 	this->height = height;
 	this->position = new std::array<float, 2>{positionX, positionY};
 	this->vertices = this->calcVerts();
 	this->texture;
+	this->textureLocation = textureLocation;
 
 	this->genTexture();
 	this->initRectangle();
@@ -15,6 +16,8 @@ drawRectangle::drawRectangle(float width, float height, float positionX, float p
 
 
 drawRectangle::~drawRectangle() {
+	glDeleteVertexArrays(1, &this->VAO);
+	glDeleteBuffers(1, &this->VBO);
 	delete this->vertices;
 	delete this->position;
 	this->position = nullptr;
@@ -95,7 +98,6 @@ void drawRectangle::renderRectangle() {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, this->texture);
 	glBindVertexArray(this->VAO);
-	//access violation
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
 }
@@ -106,7 +108,7 @@ void drawRectangle::genTexture() {
 
 	glGenTextures(1, &this->texture);
 	glBindTexture(GL_TEXTURE_2D, this->texture);
-	unsigned char* data = stbi_load("Textures/container.jpg", &width, &height, &nrChannels, 0);
+	unsigned char* data = stbi_load(this->textureLocation, &width, &height, &nrChannels, 0);
 	if (data) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 	}
