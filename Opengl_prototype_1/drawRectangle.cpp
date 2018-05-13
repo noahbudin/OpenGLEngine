@@ -2,10 +2,15 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "Libraries\stb_image.h"
 
-drawRectangle::drawRectangle(float width, float height, float positionX, float positionY, char* textureLocation) {
+drawRectangle::drawRectangle(float width, float height, float positionX, float positionY, char* textureLocation, int windowWidth, int windowHeight) {
+	this->windowWidth = windowWidth;
+	this->windowHeight = windowHeight;
 	this->width = width;
 	this->height = height;
+	this->widthgl = this->width / (float)this->windowWidth;
+	this->heightgl = this->height / (float)this->windowHeight;
 	this->position = new std::array<float, 2>{positionX, positionY};
+	this->positiongl = screenToOpenglXY();
 	this->vertices = this->calcVerts();
 	this->texture;
 	this->textureLocation = textureLocation;
@@ -13,7 +18,6 @@ drawRectangle::drawRectangle(float width, float height, float positionX, float p
 	this->genTexture();
 	this->initRectangle();
 }
-
 
 drawRectangle::~drawRectangle() {
 	glDeleteVertexArrays(1, &this->VAO);
@@ -24,6 +28,13 @@ drawRectangle::~drawRectangle() {
 	this->vertices = nullptr;
 }
 
+std::array<float, 2>* drawRectangle::screenToOpenglXY() {
+	std::array<float, 2>* returnXY = new std::array<float, 2>;
+	returnXY->at(0) = ((this->position->at(0) - (this->windowWidth / 2)) / (this->windowWidth / 2));
+	returnXY->at(1) = ((this->windowHeight / 2 - this->position->at(1)) / (this->windowHeight / 2));
+	return returnXY;
+}
+
 std::array<float, 24>* drawRectangle::calcVerts() {
 	std::array<float, 24>* returnVerts = new std::array<float, 24>;
 	returnVerts->fill(0.0f);
@@ -32,40 +43,40 @@ std::array<float, 24>* drawRectangle::calcVerts() {
 		switch (i) {
 		//bottom left triangle first
 		case 0://top left vertex
-			returnVerts->at(i) = this->position->at(0) - this->width / 2;
-			returnVerts->at(i + 1) = this->position->at(1) + this->height / 2;
+			returnVerts->at(i) = this->positiongl->at(0) - this->widthgl / 2;
+			returnVerts->at(i + 1) = this->positiongl->at(1) + this->heightgl / 2;
 			returnVerts->at(i + 2) = 0.0f; //tex x
 			returnVerts->at(i + 3) = 1.0f; //tex y
 			break;
 		case 4://bottom right vertex
-			returnVerts->at(i) = this->position->at(0) + this->width / 2; //x
-			returnVerts->at(i + 1) = this->position->at(1) - this->height / 2; //y
+			returnVerts->at(i) = this->positiongl->at(0) + this->widthgl / 2; //x
+			returnVerts->at(i + 1) = this->positiongl->at(1) - this->heightgl / 2; //y
 			returnVerts->at(i + 2) = 1.0f; //tex x
 			returnVerts->at(i + 3) = 0.0f; //tex y
 			break;
 		case 8://bottom left vertex
-			returnVerts->at(i) = this->position->at(0) - this->width / 2;
-			returnVerts->at(i + 1) = this->position->at(1) - this->height / 2;
+			returnVerts->at(i) = this->positiongl->at(0) - this->widthgl / 2;
+			returnVerts->at(i + 1) = this->positiongl->at(1) - this->heightgl / 2;
 			returnVerts->at(i + 2) = 0.0f; //tex x
 			returnVerts->at(i + 3) = 0.0f; //tex y
 			break;
 
 		//top right triangle
 		case 12://top left vertex
-			returnVerts->at(i) = this->position->at(0) - this->width / 2;
-			returnVerts->at(i + 1) = this->position->at(1) + this->height / 2;
+			returnVerts->at(i) = this->positiongl->at(0) - this->widthgl / 2;
+			returnVerts->at(i + 1) = this->positiongl->at(1) + this->heightgl / 2;
 			returnVerts->at(i + 2) = 0.0f; //tex x
 			returnVerts->at(i + 3) = 1.0f; //tex y
 			break;
 		case 16://top right vertex
-			returnVerts->at(i) = this->position->at(0) + this->width / 2;
-			returnVerts->at(i + 1) = this->position->at(1) + this->height / 2;
+			returnVerts->at(i) = this->positiongl->at(0) + this->widthgl / 2;
+			returnVerts->at(i + 1) = this->positiongl->at(1) + this->heightgl / 2;
 			returnVerts->at(i + 2) = 1.0f; //tex x
 			returnVerts->at(i + 3) = 1.0f; //tex y
 			break;
 		case 20://bottom right vertex
-			returnVerts->at(i) = this->position->at(0) + this->width / 2; //x
-			returnVerts->at(i + 1) = this->position->at(1) - this->height / 2; //y
+			returnVerts->at(i) = this->positiongl->at(0) + this->widthgl / 2; //x
+			returnVerts->at(i + 1) = this->positiongl->at(1) - this->heightgl / 2; //y
 			returnVerts->at(i + 2) = 1.0f; //tex x
 			returnVerts->at(i + 3) = 0.0f; //tex y
 			break;

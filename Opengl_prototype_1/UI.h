@@ -15,24 +15,22 @@ class UI {
 	private:
 		double rectangleButtonX;
 		double rectangleButtonY;
-		double rectangleButtonXgl;
-		double rectangleButtonYgl;
+
 		double rectangleButtonWidth;
 		double rectangleButtonHeight;
-		double rectangleButtonWidthgl;
-		double rectangleButtonHeightgl;
+
 		double triangleButtonX;
 		double triangleButtonY;
-		double triangleButtonXgl;
-		double triangleButtonYgl;
+
 		double triangleButtonWidth;
 		double triangleButtonHeight;
-		double triangleButtonWidthgl;
-		double triangleButtonHeightgl;
+
 		char* rectangleButtonInactive;
 		char* rectangleButtonActive;
+
 		char* triangleButtonInactive;
 		char* triangleButtonActive;
+
 		int windowWidth;
 		int windowHeight;
 

@@ -13,31 +13,23 @@ UI::UI(int windowWidth, int windowHeight) {
 
 	this->rectangleButtonWidth = 500;
 	this->rectangleButtonHeight = 300;
-	this->rectangleButtonWidthgl = this->screenToOpengl(this->rectangleButtonWidth, "w");
-	this->rectangleButtonHeightgl = this->screenToOpengl(this->rectangleButtonHeight, "h");
 	
 	this->rectangleButtonX = windowWidth - this->rectangleButtonWidth / 2;
 	this->rectangleButtonY = windowHeight / 1.5;
-	this->rectangleButtonXgl = this->screenToOpengl(this->rectangleButtonX, "x");
-	this->rectangleButtonYgl = this->screenToOpengl(this->rectangleButtonY, "y");
 
 	this->triangleButtonWidth = 500;
 	this->triangleButtonHeight = 300;
-	this->triangleButtonWidthgl = this->screenToOpengl(this->triangleButtonWidth, "w");
-	this->triangleButtonHeightgl = this->screenToOpengl(this->triangleButtonHeight, "h");
 
 	this->triangleButtonX = windowWidth - this->triangleButtonWidth/2;
 	this->triangleButtonY = windowHeight / 4.5;
-	this->triangleButtonXgl = this->screenToOpengl(this->triangleButtonX, "x");
-	this->triangleButtonYgl = this->screenToOpengl(this->triangleButtonY, "y");
 
 	this->rectangleButtonInactive = "Textures/rectangleInactive.jpg";
 	this->rectangleButtonActive = "Textures/rectangleActive.jpg";
 	this->triangleButtonInactive = "Textures/triangleInactive.jpg";
 	this->triangleButtonActive = "Textures/triangleActive.jpg";
 	this->currActive = new char('t');
-	this->rectangleButton = new drawRectangle(this->rectangleButtonWidthgl, this->rectangleButtonHeightgl, this->rectangleButtonXgl, this->rectangleButtonYgl, this->rectangleButtonInactive);
-	this->triangleButton = new drawRectangle(this->triangleButtonWidthgl, this->triangleButtonHeightgl, this->triangleButtonXgl, this->triangleButtonYgl, this->triangleButtonActive);
+	this->rectangleButton = new drawRectangle(this->rectangleButtonWidth, this->rectangleButtonHeight, this->rectangleButtonX, this->rectangleButtonY, this->rectangleButtonInactive, this->windowWidth, this->windowHeight);
+	this->triangleButton = new drawRectangle(this->triangleButtonWidth, this->triangleButtonHeight, this->triangleButtonX, this->triangleButtonY, this->triangleButtonActive, this->windowWidth, this->windowHeight);
 }
 
 UI::~UI() {
@@ -48,23 +40,6 @@ UI::~UI() {
 void UI::UIRender() {
 	this->triangleButton->renderRectangle();
 	this->rectangleButton->renderRectangle();
-}
-
-double UI::screenToOpengl(double coord, char* axis) {
-	double returnCord;
-	if (axis == "x") {
-		returnCord = ((coord - (windowWidth / 2)) / (this->windowWidth / 2));
-	}
-	else if(axis == "y"){
-		returnCord = (((windowHeight / 2) - coord) / (this->windowHeight / 2));
-	}
-	else if (axis == "w") {
-		returnCord = coord/this->windowWidth;
-	}
-	else if(axis == "h"){
-		returnCord = coord/this->windowHeight;
-	}
-	return returnCord;
 }
 
 bool UI::UIMouseListener(int mouseX, int mouseY) {
@@ -115,12 +90,12 @@ void UI::setActive(char button) {
 
 	if (button == 'r') {
 		*this->currActive = 'r';
-		this->rectangleButton = new drawRectangle(this->rectangleButtonWidthgl, this->rectangleButtonHeightgl, this->rectangleButtonXgl, this->rectangleButtonYgl, this->rectangleButtonActive);
-		this->triangleButton = new drawRectangle(this->triangleButtonWidthgl, this->triangleButtonHeightgl, this->triangleButtonXgl, this->triangleButtonYgl, this->triangleButtonInactive);
+		this->rectangleButton = new drawRectangle(this->rectangleButtonWidth, this->rectangleButtonHeight, this->rectangleButtonX, this->rectangleButtonY, this->rectangleButtonActive, this->windowWidth, this->windowHeight);
+		this->triangleButton = new drawRectangle(this->triangleButtonWidth, this->triangleButtonHeight, this->triangleButtonX, this->triangleButtonY, this->triangleButtonInactive, this->windowWidth, this->windowHeight);
 	}
 	else {
 		*this->currActive = 't';
-		this->rectangleButton = new drawRectangle(this->rectangleButtonWidthgl, this->rectangleButtonHeightgl, this->rectangleButtonXgl, this->rectangleButtonYgl, this->rectangleButtonInactive);
-		this->triangleButton = new drawRectangle(this->triangleButtonWidthgl, this->triangleButtonHeightgl, this->triangleButtonXgl, this->triangleButtonYgl, this->triangleButtonActive);
+		this->rectangleButton = new drawRectangle(this->rectangleButtonWidth, this->rectangleButtonHeight, this->rectangleButtonX, this->rectangleButtonY, this->rectangleButtonInactive, this->windowWidth, this->windowHeight);
+		this->triangleButton = new drawRectangle(this->triangleButtonWidth, this->triangleButtonHeight, this->triangleButtonX, this->triangleButtonY, this->triangleButtonActive, this->windowWidth, this->windowHeight);
 	}
 }

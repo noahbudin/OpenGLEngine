@@ -154,11 +154,11 @@ int main() {
 		if (mouse_button_callback(window)){
 			if (!ui->UIMouseListener(cursorX, cursorY)) {
 				if (*drawMode == 't') {
-					drawTriangle* tempT = new drawTriangle(0.2, 0.2, screenToOpengl(cursorX, "x"), screenToOpengl(cursorY, "y"), "Textures/container.jpg");
+					drawTriangle* tempT = new drawTriangle(0.3, 0.3, screenToOpengl(cursorX, "x"), screenToOpengl(cursorY, "y"), "Textures/container.jpg");
 					triangles->push_back(tempT);
 				}
 				else if (*drawMode == 'r') {
-					drawRectangle* tempRec = new drawRectangle(0.3, 0.3, screenToOpengl(cursorX, "x"), screenToOpengl(cursorY, "y"), "Textures/cat.jpg");
+					drawRectangle* tempRec = new drawRectangle(450, 300, (int)cursorX, (int)cursorY, "Textures/cat.jpg", *width, *height);
 					rectangles->push_back(tempRec);
 				}
 			}

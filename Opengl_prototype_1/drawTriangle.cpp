@@ -1,6 +1,6 @@
 /**TODO 
 * Make an object class as parent to triangles and rectangles, make circles eventually
-*
+* Make internal screen to opengl coordinate conversion
 *
 **/
 
