@@ -7,9 +7,11 @@ class UI {
 		UI(int windowWidth, int windowHeight);
 		~UI();
 		void UIRender();
+		bool UICheckClear(int mouseX, int mouseY);
 		bool UIMouseListener(int mouseX, int mouseY);
 		drawRectangle* rectangleButton;
 		drawRectangle* triangleButton;
+		drawRectangle* clearButton;
 		char* currActive;
 
 	private:
@@ -30,6 +32,14 @@ class UI {
 
 		char* triangleButtonInactive;
 		char* triangleButtonActive;
+
+		int clearButtonWidth;
+		int clearButtonHeight;
+
+		int clearButtonX;
+		int clearButtonY;
+
+		char* clearButtonTex;
 
 		int windowWidth;
 		int windowHeight;

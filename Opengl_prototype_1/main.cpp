@@ -80,8 +80,6 @@ double screenToOpengl(double cord, char* axis) {
 	else {
 		returnCord = (((*height / 2) - cord) / (*height / 2));
 	}
-	std::cout << "returnCord: " << returnCord << std::endl;
-	std::cout << "screen coord " << axis << " : " << cord << std::endl;
 	return returnCord;
 }
 
@@ -113,6 +111,7 @@ int main() {
 	//maximizes window, gets width and height, makes window current context
 	glfwMaximizeWindow(window);
 	glfwGetWindowSize(window, width, height);
+	std::cout << "windowWidth: " << *width << " windowHeight: " << *height << std::endl;
 	glfwMakeContextCurrent(window);
 	
 	//use GLAD to manage pointers to opengl functions
@@ -152,6 +151,7 @@ int main() {
 
 		//if mouse is clicked and draw mode hasnt been changed by UI interaction
 		if (mouse_button_callback(window)){
+			std::cout << "mouseX: " << cursorX << " mouseY: " << cursorY << std::endl;
 			if (!ui->UIMouseListener(cursorX, cursorY)) {
 				if (*drawMode == 't') {
 					drawTriangle* tempT = new drawTriangle(0.3, 0.3, screenToOpengl(cursorX, "x"), screenToOpengl(cursorY, "y"), "Textures/container.jpg");
@@ -161,6 +161,9 @@ int main() {
 					drawRectangle* tempRec = new drawRectangle(450, 300, (int)cursorX, (int)cursorY, "Textures/cat.jpg", *width, *height);
 					rectangles->push_back(tempRec);
 				}
+			}
+			if (ui->UICheckClear(cursorX, cursorY)) {
+				clearScreen(triangles, rectangles);
 			}
 		}
 		
