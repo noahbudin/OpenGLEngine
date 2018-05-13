@@ -26,7 +26,7 @@ int* width = new int(250);
 int* height = new int(100);
 //space button bool
 char* previousState = "up";
-char* drawMode = "t";
+char* drawMode;
 double cursorX;
 double cursorY;
 
@@ -54,38 +54,6 @@ std::vector<drawTriangle*>* processInput(GLFWwindow* window, ReadWriteLevelInfo*
 		clearScreen(triangles, rectangles);
 	}
 	return triangles;
-}
-
-//switches shape to triangle
-bool processOneKey(GLFWwindow* window) {
-	int oneKey = glfwGetKey(window, GLFW_KEY_1);
-
-	if (oneKey == GLFW_RELEASE) {
-		previousState = "up";
-	}
-	if (oneKey == GLFW_PRESS && previousState == "up") {
-		previousState = "down";
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
-//switches shape to square
-bool processTwoKey(GLFWwindow* window) {
-	int twoKey = glfwGetKey(window, GLFW_KEY_2);
-
-	if (twoKey == GLFW_RELEASE) {
-		previousState = "up";
-	}
-	if (twoKey == GLFW_PRESS && previousState == "up") {
-		previousState = "down";
-		return true;
-	}
-	else {
-		return false;
-	}
 }
 
 //places shape on left mouse click
@@ -166,6 +134,10 @@ int main() {
 	//initialize UI
 	UI* ui = new UI(*width, *height);
 
+	//Note:: address of drawMode == address of currentActive in UI
+	//be careful when deleting
+	drawMode = ui->currActive;
+
 	//construct object list
 	std::vector<drawTriangle*>* triangles = new std::vector<drawTriangle*>;//stores all my triangles
 	std::vector<drawRectangle*>* rectangles = new std::vector<drawRectangle*>;//stores all my rectangles
@@ -178,23 +150,18 @@ int main() {
 		currShader.use();
 		triangles = processInput(window, read, triangles, rectangles); //need to fix later?
 
+		//if mouse is clicked and draw mode hasnt been changed by UI interaction
 		if (mouse_button_callback(window)){
-			if (drawMode == "t") {
-				drawTriangle* tempT = new drawTriangle(0.2, 0.2, screenToOpengl(cursorX, "x"), screenToOpengl(cursorY, "y"), "Textures/container.jpg");
-				triangles->push_back(tempT);
+			if (!ui->UIMouseListener(cursorX, cursorY)) {
+				if (*drawMode == 't') {
+					drawTriangle* tempT = new drawTriangle(0.2, 0.2, screenToOpengl(cursorX, "x"), screenToOpengl(cursorY, "y"), "Textures/container.jpg");
+					triangles->push_back(tempT);
+				}
+				else if (*drawMode == 'r') {
+					drawRectangle* tempRec = new drawRectangle(0.3, 0.3, screenToOpengl(cursorX, "x"), screenToOpengl(cursorY, "y"), "Textures/cat.jpg");
+					rectangles->push_back(tempRec);
+				}
 			}
-			else if (drawMode == "r") {
-				drawRectangle* tempRec = new drawRectangle(0.5, 0.5, screenToOpengl(cursorX, "x"), screenToOpengl(cursorY, "y"), "Textures/cat.jpg");
-				rectangles->push_back(tempRec);
-			}
-		}
-		
-		//change draw mode
-		if (processOneKey(window)) {
-			drawMode = "t";
-		}
-		if (processTwoKey(window)) {
-			drawMode = "r";
 		}
 		
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -212,7 +179,7 @@ int main() {
 			}
 		}
 		//render UI elements	
-		ui->renderUI();
+		ui->UIRender();
 
 		mouse_button_callback(window);
 		glfwGetCursorPos(window, &cursorX, &cursorY); 
